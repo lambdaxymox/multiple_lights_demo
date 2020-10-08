@@ -22,13 +22,11 @@ use material::Material;
 use cglinalg::{
     Angle,
     Degrees,
-    Magnitude,
     Matrix4,
     Radians,
     Array,
     Vector3,
     Identity,
-    Zero,
     Unit,
 };
 use cgperspective::{
@@ -975,7 +973,6 @@ fn main() {
     let light_mesh = create_box_mesh();
     init_logger("opengl_demo.log");
     info!("BEGIN LOG");
-    let scene_center_world = Vector3::<f32>::zero();
     let mut camera = create_camera(SCREEN_WIDTH, SCREEN_HEIGHT);
     let mut cube_lights= create_cube_lights();
     let mut spotlight = create_spotlight(&camera);
