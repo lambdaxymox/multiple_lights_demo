@@ -310,7 +310,7 @@ fn create_spotlight(camera: &PerspectiveFovCamera<f32>) -> SpotLight<f32> {
 fn create_lighting_map() -> LightingMap {
     let diffuse_buffer = include_bytes!("../assets/container2_diffuse.png");
     let specular_buffer = include_bytes!("../assets/container2_specular.png");
-    let emission_buffer = include_bytes!("../assets/matrix.png");
+    let emission_buffer = include_bytes!("../assets/container2_emission.png");
     
     texture::load_lighting_map(diffuse_buffer, specular_buffer, emission_buffer)
 }
