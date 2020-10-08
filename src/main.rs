@@ -15,7 +15,7 @@ mod backend;
 mod camera;
 mod light;
 mod material;
-mod texture;
+mod lighting_map;
 
 
 use material::Material;
@@ -60,12 +60,11 @@ use crate::backend::{
     ShaderSourceBuilder,
     ShaderSource,
     ShaderHandle,
-    TextureImage2D,
 };
 use crate::camera::{
     PerspectiveFovCamera,
 };
-use crate::texture::{
+use crate::lighting_map::{
     LightingMap,
 };
 use crate::light::*;
@@ -307,7 +306,7 @@ fn create_lighting_map() -> LightingMap {
     let specular_buffer = include_bytes!("../assets/container2_specular.png");
     let emission_buffer = include_bytes!("../assets/container2_emission.png");
     
-    texture::load_lighting_map(diffuse_buffer, specular_buffer, emission_buffer)
+    lighting_map::load_lighting_map(diffuse_buffer, specular_buffer, emission_buffer)
 }
 
 fn send_to_gpu_uniforms_cube_light_mesh(shader: ShaderHandle, model_mat: &Matrix4<f32>) {
