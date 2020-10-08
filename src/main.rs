@@ -60,23 +60,19 @@ use crate::backend::{
     ShaderSourceBuilder,
     ShaderSource,
     ShaderHandle,
+    TextureImage2D,
 };
 use crate::camera::{
     PerspectiveFovCamera,
 };
 use crate::texture::{
     LightingMap,
-    TextureImage2D,
 };
 use crate::light::*;
 
 use std::mem;
 use std::ptr;
 
-
-// OpenGL extension constants.
-const GL_TEXTURE_MAX_ANISOTROPY_EXT: u32 = 0x84FE;
-const GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT: u32 = 0x84FF;
 
 // Default value for the color buffer.
 const CLEAR_COLOR: [f32; 4] = [0.1_f32, 0.1_f32, 0.1_f32, 1.0_f32];
@@ -386,6 +382,7 @@ fn send_to_gpu_uniforms_point_lights(shader: ShaderHandle, lights: &[PointLight<
 /// will cause OpenGL to return a `GL_INVALID_VALUE` on a call to 
 /// `glGetUniformLocation`.
 fn send_to_gpu_uniforms_spotlight(shader: ShaderHandle, light: &SpotLight<f32>) {
+    shader.use_program();
     shader.set_vec3("spotLight.position", &light.position);
     shader.set_vec3("spotLight.direction", &light.direction);
     shader.set_float("spotLight.cutOff", light.cutoff);
@@ -399,9 +396,9 @@ fn send_to_gpu_uniforms_spotlight(shader: ShaderHandle, light: &SpotLight<f32>) 
 }
 
 fn send_to_gpu_textures_material(lighting_map: &LightingMap) -> (GLuint, GLuint, GLuint) {
-    let diffuse_tex = send_to_gpu_texture(&lighting_map.diffuse, gl::REPEAT).unwrap();
-    let specular_tex = send_to_gpu_texture(&lighting_map.specular, gl::REPEAT).unwrap();
-    let emission_tex = send_to_gpu_texture(&lighting_map.emission, gl::REPEAT).unwrap();
+    let diffuse_tex = backend::send_to_gpu_texture(&lighting_map.diffuse, gl::REPEAT).unwrap();
+    let specular_tex = backend::send_to_gpu_texture(&lighting_map.specular, gl::REPEAT).unwrap();
+    let emission_tex = backend::send_to_gpu_texture(&lighting_map.emission, gl::REPEAT).unwrap();
 
     (diffuse_tex, specular_tex, emission_tex)
 }
@@ -414,31 +411,28 @@ struct MaterialUniforms<'a> {
     material: &'a Material<f32>,
 }
 
-fn send_to_gpu_uniforms_material(shader: ShaderHandle, uniforms: MaterialUniforms) {
-    let material_diffuse_loc = unsafe {
-        gl::GetUniformLocation(shader.id, backend::gl_str("material.diffuse").as_ptr())
-    };
-    debug_assert!(material_diffuse_loc > -1);
-    let material_specular_loc = unsafe {
-        gl::GetUniformLocation(shader.id, backend::gl_str("material.specular").as_ptr())
-    };
-    debug_assert!(material_specular_loc > -1);
-    let material_emission_loc = unsafe {
-        gl::GetUniformLocation(shader.id, backend::gl_str("material.emission").as_ptr())
-    };
-    debug_assert!(material_emission_loc > -1);
-    let material_specular_exponent_loc = unsafe { 
-        gl::GetUniformLocation(shader.id, backend::gl_str("material.specular_exponent").as_ptr())
-    };
-    debug_assert!(material_specular_exponent_loc > -1);
-
-    unsafe {
-        gl::UseProgram(shader.id);
-        gl::Uniform1i(material_diffuse_loc, uniforms.diffuse_index);
-        gl::Uniform1i(material_specular_loc, uniforms.specular_index);
-        gl::Uniform1i(material_emission_loc, uniforms.emission_index);
-        gl::Uniform1f(material_specular_exponent_loc, uniforms.material.specular_exponent);
+impl<'a> MaterialUniforms<'a> {
+    fn new(
+        diffuse_index: i32,
+        specular_index: i32,
+        emission_index: i32,
+        material: &'a Material<f32>) -> Self
+    {
+        Self {
+            diffuse_index: diffuse_index,
+            specular_index: specular_index,
+            emission_index: emission_index,
+            material: material,
+        }
     }
+}
+
+fn send_to_gpu_uniforms_material(shader: ShaderHandle, uniforms: MaterialUniforms) {
+    shader.use_program();
+    shader.set_int("material.diffuse", uniforms.diffuse_index);
+    shader.set_int("material.specular", uniforms.specular_index);
+    shader.set_int("material.emission", uniforms.emission_index);
+    shader.set_float("material.specular_exponent", uniforms.material.specular_exponent);
 }
 
 fn send_to_gpu_mesh(shader: ShaderHandle, mesh: &ObjMesh) -> (GLuint, GLuint, GLuint, GLuint) {
@@ -538,40 +532,6 @@ fn send_to_gpu_light_mesh(shader: ShaderHandle, mesh: &ObjMesh) -> (GLuint, GLui
 
     (vao, v_pos_vbo)
 }
-
-/// Load texture image into the GPU.
-/// TODO: Move this function into the backend module.
-fn send_to_gpu_texture(texture_image: &TextureImage2D, wrapping_mode: GLuint) -> Result<GLuint, String> {
-    let mut tex = 0;
-    unsafe {
-        gl::GenTextures(1, &mut tex);
-    }
-    debug_assert!(tex > 0);
-    unsafe {
-        gl::ActiveTexture(gl::TEXTURE0);
-        gl::BindTexture(gl::TEXTURE_2D, tex);
-        gl::TexImage2D(
-            gl::TEXTURE_2D, 0, gl::RGBA as i32, texture_image.width as i32, texture_image.height as i32, 0,
-            gl::RGBA, gl::UNSIGNED_BYTE,
-            texture_image.as_ptr() as *const GLvoid
-        );
-        gl::GenerateMipmap(gl::TEXTURE_2D);
-        gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_S, wrapping_mode as GLint);
-        gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_T, wrapping_mode as GLint);
-        gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::LINEAR as GLint);
-        gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MIN_FILTER, gl::LINEAR_MIPMAP_LINEAR as GLint);
-    }
-
-    let mut max_aniso = 0.0;
-    unsafe {
-        gl::GetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &mut max_aniso);
-        // Set the maximum!
-        gl::TexParameterf(gl::TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, max_aniso);
-    }
-
-    Ok(tex)
-}
-
 
 fn create_mesh_shader_source() -> ShaderSource<'static, 'static, 'static> {
     let vertex_name = "multiple_lights.vert.glsl";
@@ -734,12 +694,12 @@ fn main() {
     let material_specular_index = 1;
     let material_emission_index = 2;
     let material = material::sgi_material_table()["chrome"];
-    let material_uniforms = MaterialUniforms { 
-        diffuse_index: material_diffuse_index, 
-        specular_index: material_specular_index,
-        emission_index: material_emission_index,
-        material: &material,
-    };
+    let material_uniforms = MaterialUniforms::new( 
+        material_diffuse_index, 
+        material_specular_index,
+        material_emission_index,
+        &material,
+    );
     let lighting_map = create_lighting_map();
     let mut context = init_gl(SCREEN_WIDTH, SCREEN_HEIGHT);
 

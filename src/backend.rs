@@ -7,29 +7,42 @@ use crate::gl::types::{
     GLfloat, 
     GLint, 
     GLubyte, 
-    GLuint
+    GLuint,
+    GLvoid
 };
 use glfw;
 use glfw::{
     Context, 
     Glfw
 };
+use image::png::{
+    PngDecoder,
+};
+use image::{
+    ImageDecoder,
+};
 use std::error;
 use std::ffi::{
     CStr, 
-    CString
+    CString,
 };
-use std::fs::File;
+use std::fs::{
+    File,
+};
 use std::io::{
     Read, 
     BufReader,
     Cursor,
 };
-use std::sync::mpsc::Receiver;
+use std::sync::mpsc::{
+    Receiver
+};
 use std::ptr;
 use std::fmt;
 use std::mem;
-use std::path::Path;
+use std::path::{
+    Path
+};
 
 use log::{
     info, 
@@ -41,6 +54,10 @@ use log::{
 const MAX_SHADER_LENGTH: usize = 262144;
 
 const FPS_COUNTER_REFRESH_PERIOD_SECONDS: f64 = 0.5;
+
+// OpenGL extension constants.
+const GL_TEXTURE_MAX_ANISOTROPY_EXT: u32 = 0x84FE;
+const GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT: u32 = 0x84FF;
 
 
 #[inline]
@@ -830,6 +847,81 @@ impl ShaderHandle {
         unsafe {
             gl::UniformMatrix4fv(location, 1, gl::FALSE, value.as_ptr());
         }
+    }
+}
+
+pub fn load_image(buffer: &[u8]) -> TextureImage2D {
+    let cursor = Cursor::new(buffer);
+    let image_decoder = PngDecoder::new(cursor).unwrap();
+    let (width, height) = image_decoder.dimensions();
+    let total_bytes = image_decoder.total_bytes();
+    let bytes_per_pixel = image_decoder.color_type().bytes_per_pixel() as u32;
+    let mut image_data = vec![0 as u8; total_bytes as usize];
+    image_decoder.read_image(&mut image_data).unwrap();
+
+    assert_eq!(total_bytes, (width * height * bytes_per_pixel) as u64);
+
+    TextureImage2D::new(width, height, bytes_per_pixel, image_data)
+}
+
+/// Load texture image into the GPU.
+pub fn send_to_gpu_texture(texture_image: &TextureImage2D, wrapping_mode: GLuint) -> Result<GLuint, String> {
+    let mut tex = 0;
+    unsafe {
+        gl::GenTextures(1, &mut tex);
+    }
+    debug_assert!(tex > 0);
+    unsafe {
+        gl::ActiveTexture(gl::TEXTURE0);
+        gl::BindTexture(gl::TEXTURE_2D, tex);
+        gl::TexImage2D(
+            gl::TEXTURE_2D, 0, gl::RGBA as i32, texture_image.width as i32, texture_image.height as i32, 0,
+            gl::RGBA, gl::UNSIGNED_BYTE,
+            texture_image.as_ptr() as *const GLvoid
+        );
+        gl::GenerateMipmap(gl::TEXTURE_2D);
+        gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_S, wrapping_mode as GLint);
+        gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_T, wrapping_mode as GLint);
+        gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::LINEAR as GLint);
+        gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MIN_FILTER, gl::LINEAR_MIPMAP_LINEAR as GLint);
+    }
+
+    let mut max_aniso = 0.0;
+    unsafe {
+        gl::GetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &mut max_aniso);
+        gl::TexParameterf(gl::TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, max_aniso);
+    }
+
+    Ok(tex)
+}
+
+
+#[derive(Clone)]
+pub struct TextureImage2D {
+    pub width: u32,
+    pub height: u32,
+    pub bytes_per_pixel: u32,
+    data: Vec<u8>,
+}
+
+impl TextureImage2D {
+    pub fn new(width: u32, height: u32, bytes_per_pixel: u32, data: Vec<u8>) -> Self {
+        Self {
+            width: width,
+            height: height,
+            bytes_per_pixel: bytes_per_pixel,
+            data: data,
+        }
+    }
+
+    #[inline]
+    pub fn as_ptr(&self) -> *const u8 {
+        self.data.as_ptr()
+    }
+
+    #[inline]
+    pub fn as_slice(&self) -> &[u8] {
+        &self.data
     }
 }
 
