@@ -357,7 +357,7 @@ fn send_to_gpu_uniforms_camera(
 
 fn send_to_gpu_uniforms_dir_light(shader: GLuint, light: &DirLight<f32>) {
     let light_direction_loc = unsafe {
-        gl::GetUniformLocation(shader, backend::gl_str("dirLight.position").as_ptr())
+        gl::GetUniformLocation(shader, backend::gl_str("dirLight.direction").as_ptr())
     };
     debug_assert!(light_direction_loc > -1);
     let light_ambient_loc = unsafe {
@@ -974,9 +974,9 @@ fn main() {
     init_logger("opengl_demo.log");
     info!("BEGIN LOG");
     let mut camera = create_camera(SCREEN_WIDTH, SCREEN_HEIGHT);
-    let mut cube_lights= create_cube_lights();
-    let mut spotlight = create_spotlight(&camera);
-    let mut dir_light = create_directional_light();
+    let cube_lights= create_cube_lights();
+    let spotlight = create_spotlight(&camera);
+    let dir_light = create_directional_light();
     let material_diffuse_index = 0;
     let material_specular_index = 1;
     let material = material::sgi_material_table()["chrome"];
@@ -1041,6 +1041,8 @@ fn main() {
         send_to_gpu_uniforms_camera(mesh_shader, &camera);
         send_to_gpu_uniforms_camera(light_shader, &camera);
         send_to_gpu_uniforms_point_light(mesh_shader, &cube_lights);
+        send_to_gpu_uniforms_spotlight(mesh_shader, &spotlight);
+        send_to_gpu_uniforms_dir_light(mesh_shader, &dir_light);
     
         unsafe {
             gl::ClearBufferfv(gl::COLOR, 0, &CLEAR_COLOR[0] as *const GLfloat);
@@ -1052,7 +1054,7 @@ fn main() {
             gl::ActiveTexture(gl::TEXTURE1);
             gl::BindTexture(gl::TEXTURE_2D, specular_tex);
             gl::BindVertexArray(mesh_vao);
-            gl::DrawArrays(gl::TRIANGLES, 0, mesh.len() as i32);   
+            gl::DrawArrays(gl::TRIANGLES, 0, mesh.len() as i32);
         }
 
         // Illuminate the boxes.
