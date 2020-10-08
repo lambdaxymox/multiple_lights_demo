@@ -318,15 +318,8 @@ fn create_lighting_map() -> LightingMap {
 }
 
 fn send_to_gpu_uniforms_cube_light_mesh(shader: ShaderHandle, model_mat: &Matrix4<f32>) {
-    let model_mat_loc = unsafe {
-        gl::GetUniformLocation(shader.id, backend::gl_str("model").as_ptr())
-    };
-    debug_assert!(model_mat_loc > -1);
-    
-    unsafe {
-        gl::UseProgram(shader.id);
-        gl::UniformMatrix4fv(model_mat_loc, 1, gl::FALSE, model_mat.as_ptr());
-    }
+    shader.use_program();
+    shader.set_mat4("model", model_mat);
 }
 
 fn send_to_gpu_uniforms_camera(shader: ShaderHandle, camera: &PerspectiveFovCamera<f32>) {
