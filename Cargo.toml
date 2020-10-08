@@ -11,7 +11,6 @@ log = "0.4.11"
 file_logger = { git = "https://github.com/lambdaxymox/file-logger" }
 cglinalg = { git = "https://github.com/lambdaxymox/cglinalg" }
 cgperspective = { git = "https://github.com/lambdaxymox/cgperspective" }
-cgilluminate = { git = "https://github.com/lambdaxymox/cgilluminate" }
 mini_obj = { git = "https://github.com/lambdaxymox/mini_obj" }
 
 [build-dependencies]

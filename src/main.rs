@@ -41,12 +41,6 @@ use cgperspective::{
     FreeKinematicsSpec,
     Camera
 };
-use cgilluminate::{
-    Light,
-    LightAttitudeSpec,
-    PointLightModelSpec,
-    SpotLightModelSpec,
-};
 use glfw::{
     Action, 
     Context, 
@@ -207,7 +201,7 @@ fn create_camera(width: u32, height: u32) -> PerspectiveFovCamera<f32> {
     Camera::new(&model_spec, &attitude_spec, &kinematics_spec)
 }
 
-fn create_cube_lights(scene_center_world: &Vector3<f32>) -> [PointLight<f32>; 4] {
+fn create_cube_lights() -> [PointLight<f32>; 4] {
     let position_0 = Vector3::new(0.7, 0.2, 2.0);
     let ambient_0 = Vector3::new(0.2, 0.2, 0.2);
     let diffuse_0 = Vector3::new(0.5, 0.5, 0.5);
@@ -842,7 +836,7 @@ fn create_cube_light_shader_source() -> ShaderSource {
     }
 }
 
-fn send_to_gpu_shaders(context: &mut backend::OpenGLContext, source: ShaderSource) -> GLuint {
+fn send_to_gpu_shaders(_context: &mut backend::OpenGLContext, source: ShaderSource) -> GLuint {
     let mut vert_reader = io::Cursor::new(source.vert_source);
     let mut frag_reader = io::Cursor::new(source.frag_source);
     let result = backend::compile_from_reader(
@@ -887,14 +881,6 @@ fn framebuffer_size_callback(context: &mut OpenGLContext, width: u32, height: u3
     unsafe {
         gl::Viewport(0, 0, width as i32, height as i32);
     }
-}
-
-fn mouse_callback(context: &mut OpenGLContext, pos_x: f64, pos_y: f64) {
-
-}
-
-fn scroll_callback(context: &mut OpenGLContext, offset_x: f64, offset_y: f64) {
-
 }
 
 fn process_input(context: &mut OpenGLContext) -> CameraMovement {
@@ -991,7 +977,7 @@ fn main() {
     info!("BEGIN LOG");
     let scene_center_world = Vector3::<f32>::zero();
     let mut camera = create_camera(SCREEN_WIDTH, SCREEN_HEIGHT);
-    let mut cube_lights= create_cube_lights(&scene_center_world);
+    let mut cube_lights= create_cube_lights();
     let mut spotlight = create_spotlight(&camera);
     let mut dir_light = create_directional_light();
     let material_diffuse_index = 0;
@@ -1016,12 +1002,15 @@ fn main() {
     let mesh_shader = send_to_gpu_shaders(&mut context, mesh_shader_source);
     let (
         mesh_vao, 
-        mesh_v_pos_vbo,
-        mesh_v_tex_vbo,
-        mesh_v_norm_vbo) = send_to_gpu_mesh(mesh_shader, &mesh);
+        _mesh_v_pos_vbo,
+        _mesh_v_tex_vbo,
+        _mesh_v_norm_vbo) = send_to_gpu_mesh(mesh_shader, &mesh);
     send_to_gpu_uniforms_cube_light_mesh(mesh_shader, &mesh_model_mat);
     send_to_gpu_uniforms_camera(mesh_shader, &camera);
     send_to_gpu_uniforms_material(mesh_shader, material_uniforms);
+    send_to_gpu_uniforms_point_light(mesh_shader, &cube_lights);
+    send_to_gpu_uniforms_spotlight(mesh_shader, &spotlight);
+    send_to_gpu_uniforms_dir_light(mesh_shader, &dir_light);
 
 
     // Load the lighting cube model.
@@ -1029,7 +1018,7 @@ fn main() {
     let light_shader = send_to_gpu_shaders(&mut context, light_shader_source);
     let (
         light_vao,
-        light_v_pos_vbo) = send_to_gpu_light_mesh(light_shader, &light_mesh);
+        _light_v_pos_vbo) = send_to_gpu_light_mesh(light_shader, &light_mesh);
 
     unsafe {
         gl::Enable(gl::DEPTH_TEST);
