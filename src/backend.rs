@@ -22,7 +22,8 @@ use std::ffi::{
 use std::fs::File;
 use std::io::{
     Read, 
-    BufReader
+    BufReader,
+    Cursor,
 };
 use std::sync::mpsc::Receiver;
 use std::ptr;
@@ -493,7 +494,7 @@ pub fn parse_shader<P: AsRef<Path>, R: Read>(
 }
 
 /// Create a shader from source files.
-pub fn create_shader<P: AsRef<Path>, R: Read>(
+pub fn compile_shader<P: AsRef<Path>, R: Read>(
     reader: &mut R, file_name: P, kind: GLenum) -> Result<GLuint, ShaderCompilationError> {
 
     let disp = file_name.as_ref().display();
@@ -515,10 +516,12 @@ pub fn create_shader<P: AsRef<Path>, R: Read>(
         );
     }
 
-    let shader = unsafe { gl::CreateShader(kind) };
-    let p = shader_string.as_ptr() as *const GLchar;
+    let shader = unsafe { 
+        gl::CreateShader(kind)
+    };
+    let pointer = shader_string.as_ptr() as *const GLchar;
     unsafe {
-        gl::ShaderSource(shader, 1, &p, ptr::null());
+        gl::ShaderSource(shader, 1, &pointer, ptr::null());
         gl::CompileShader(shader);
     }
 
@@ -544,7 +547,7 @@ pub fn create_shader<P: AsRef<Path>, R: Read>(
 }
 
 /// Compile and link a shader program.
-pub fn compile_program(
+pub fn link_shader(
     vertex_shader: GLuint, fragment_shader: GLuint) -> Result<GLuint, ShaderCompilationError> {
 
     let program = unsafe { gl::CreateProgram() };
@@ -608,13 +611,13 @@ pub fn compile_from_files<P: AsRef<Path>, Q: AsRef<Path>>(
         }
     });
 
-    let vertex_shader = create_shader(
+    let vertex_shader = compile_shader(
         &mut vert_reader, vert_file_name, gl::VERTEX_SHADER
     )?;
-    let fragment_shader = create_shader(
+    let fragment_shader = compile_shader(
         &mut frag_reader, frag_file_name, gl::FRAGMENT_SHADER
     )?;
-    let program = compile_program(vertex_shader, fragment_shader)?;
+    let program = link_shader(vertex_shader, fragment_shader)?;
 
     Ok(program)
 }
@@ -624,13 +627,189 @@ pub fn compile_from_reader<R1: Read, P1: AsRef<Path>, R2: Read, P2: AsRef<Path>>
     vert_reader: &mut R1, vert_file_name: P1,
     frag_reader: &mut R2, frag_file_name: P2) -> Result<GLuint, ShaderCompilationError> {
 
-    let vertex_shader = create_shader(
+    let vertex_shader = compile_shader(
         vert_reader, vert_file_name, gl::VERTEX_SHADER
     )?;
-    let fragment_shader = create_shader(
+    let fragment_shader = compile_shader(
         frag_reader, frag_file_name, gl::FRAGMENT_SHADER
     )?;
-    let program = compile_program(vertex_shader, fragment_shader)?;
+
+    let program = link_shader(vertex_shader, fragment_shader)?;
 
     Ok(program)
 }
+
+pub fn compile(shader_source: &ShaderSource) -> Result<GLuint, ShaderCompilationError> {
+    let mut vert_reader = Cursor::new(shader_source.vertex_source);
+    let mut frag_reader = Cursor::new(shader_source.fragment_source);
+    let result = compile_from_reader(
+        &mut vert_reader, shader_source.vertex_name,
+        &mut frag_reader, shader_source.fragment_name
+    );
+    let shader = match result {
+        Ok(value) => value,
+        Err(e) => {
+            panic!("Could not compile shaders. Got error: {}", e);
+        }
+    };
+    debug_assert!(shader > 0);
+
+    Ok(shader)
+}
+
+use cglinalg::{
+    Vector2,
+    Vector3,
+    Vector4,
+    Matrix2,
+    Matrix3,
+    Matrix4,
+    Array,
+};
+
+#[derive(Copy, Clone, Debug)]
+pub struct ShaderSource<'a, 'b, 'c> {
+    vertex_name: &'a str,
+    vertex_source: &'a str,
+    fragment_name: &'b str,
+    fragment_source: &'b str,
+    geometry_name: Option<&'c str>,
+    geometry_source: Option< &'c str>,
+}
+
+pub struct ShaderSourceBuilder<'a, 'b, 'c> {
+    vertex_name: &'a str,
+    vertex_source: &'a str,
+    fragment_name: &'b str,
+    fragment_source: &'b str,
+    geometry_name: Option<&'c str>,
+    geometry_source: Option< &'c str>,
+}
+
+impl<'a, 'b, 'c> ShaderSourceBuilder<'a, 'b, 'c> {
+    pub fn new(
+        vertex_name: &'a str, 
+        vertex_source: &'a str, 
+        fragment_name: &'b str, 
+        fragment_source: &'b str) -> Self 
+    {
+        Self {
+            vertex_name: vertex_name,
+            vertex_source: vertex_source,
+            fragment_name: fragment_name,
+            fragment_source: fragment_source,
+            geometry_name: None,
+            geometry_source: None,
+        }
+    }
+
+    pub fn with_geometry_shader(&mut self, geometry_name: &'c str, geometry_source: &'c str) {
+        self.geometry_name = Some(geometry_name);
+        self.geometry_source = Some(geometry_source);
+    }
+
+    pub fn build(self) -> ShaderSource<'a, 'b, 'c> {
+        ShaderSource {
+            vertex_name: self.vertex_name,
+            vertex_source: self.vertex_source,
+            fragment_name: self.fragment_name,
+            fragment_source: self.fragment_source,
+            geometry_name: self.geometry_name,
+            geometry_source: self.geometry_source,
+        }
+    }
+}
+
+#[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
+pub struct ShaderHandle {
+    id: u32,
+}
+
+impl ShaderHandle {
+    #[inline]
+    const fn new(id: u32) -> ShaderHandle {
+        ShaderHandle {
+            id: id,
+        }
+    }
+
+    #[inline]
+    pub fn activate(&self) {
+        unsafe {
+            gl::UseProgram(self.id);
+        }
+    }
+
+    #[inline]
+    pub fn set_bool(&self, name: &str, value: bool) {
+        unsafe {
+            let location = gl::GetUniformLocation(self.id, gl_str(name).as_ptr());
+            gl::Uniform1i(location, value as i32);
+        }
+    }
+
+    #[inline]
+    pub fn set_int(&self, name: &str, value: i32) {
+        unsafe {
+            let location = gl::GetUniformLocation(self.id, gl_str(name).as_ptr());
+            gl::Uniform1i(location, value);
+        }
+    }
+
+    #[inline]
+    pub fn set_float(&self, name: &str, value: f32) {
+        unsafe {
+            let location = gl::GetUniformLocation(self.id, gl_str(name).as_ptr());
+            gl::Uniform1f(location, value);
+        }
+    }
+
+    #[inline]
+    pub fn set_vec2(&self, name: &str, value: &Vector2<f32>) {
+        unsafe {
+            let location = gl::GetUniformLocation(self.id, gl_str(name).as_ptr());
+            gl::Uniform2fv(location, 1, value.as_ptr());
+        }
+    }
+
+    #[inline]
+    pub fn set_vec3(&self, name: &str, value: &Vector3<f32>) {
+        unsafe {
+            let location = gl::GetUniformLocation(self.id, gl_str(name).as_ptr());
+            gl::Uniform2fv(location, 1, value.as_ptr());
+        }
+    }
+
+    #[inline]
+    pub fn set_vec4(&self, name: &str, value: &Vector4<f32>) {
+        unsafe {
+            let location = gl::GetUniformLocation(self.id, gl_str(name).as_ptr());
+            gl::Uniform2fv(location, 1, value.as_ptr());
+        }
+    }
+
+    #[inline]
+    pub fn set_mat2(&self, name: &str, value: &Matrix2<f32>) {
+        unsafe {
+            let location = gl::GetUniformLocation(self.id, gl_str(name).as_ptr());
+            gl::UniformMatrix2fv(location, 1, gl::FALSE, value.as_ptr());
+        }
+    }
+
+    #[inline]
+    pub fn set_mat3(&self, name: &str, value: &Matrix3<f32>) {
+        unsafe {
+            let location = gl::GetUniformLocation(self.id, gl_str(name).as_ptr());
+            gl::UniformMatrix3fv(location, 1, gl::FALSE, value.as_ptr());
+        }
+    }
+
+    #[inline]
+    pub fn set_mat4(&self, name: &str, value: &Matrix4<f32>) {
+        unsafe {
+            let location = gl::GetUniformLocation(self.id, gl_str(name).as_ptr());
+            gl::UniformMatrix4fv(location, 1, gl::FALSE, value.as_ptr());
+        }
+    }
+}
+

@@ -60,6 +60,8 @@ use mini_obj::{
 
 use crate::backend::{
     OpenGLContext,
+    ShaderSourceBuilder,
+    ShaderSource,
 };
 use crate::camera::{
     PerspectiveFovCamera,
@@ -810,54 +812,37 @@ fn send_to_gpu_texture(texture_image: &TextureImage2D, wrapping_mode: GLuint) ->
     Ok(tex)
 }
 
-#[derive(Copy, Clone)]
-struct ShaderSource {
-    vert_name: &'static str,
-    vert_source: &'static str,
-    frag_name: &'static str,
-    frag_source: &'static str,
-}
 
-fn create_mesh_shader_source() -> ShaderSource {
-    let vert_source = include_str!("../shaders/multiple_lights.vert.glsl");
-    let frag_source = include_str!("../shaders/multiple_lights.frag.glsl");
+fn create_mesh_shader_source() -> ShaderSource<'static, 'static, 'static> {
+    let vertex_name = "multiple_lights.vert.glsl";
+    let vertex_source = include_str!("../shaders/multiple_lights.vert.glsl");
+    let fragment_name = "multiple_lights.frag.glsl";
+    let fragment_source = include_str!("../shaders/multiple_lights.frag.glsl");
     
-    ShaderSource {
-        vert_name: "multiple_lights.vert.glsl",
-        vert_source: vert_source,
-        frag_name: "multiple_lights.frag.glsl",
-        frag_source: frag_source,
-    }
+    ShaderSourceBuilder::new(
+        vertex_name,
+        vertex_source,
+        fragment_name,
+        fragment_source)
+    .build()
 }
 
-fn create_cube_light_shader_source() -> ShaderSource {
-    let vert_source = include_str!("../shaders/lighting_cube.vert.glsl");
-    let frag_source = include_str!("../shaders/lighting_cube.frag.glsl");
+fn create_cube_light_shader_source() -> ShaderSource<'static, 'static, 'static> {
+    let vertex_name = "lighting_cube.vert.glsl";
+    let vertex_source = include_str!("../shaders/lighting_cube.vert.glsl");
+    let fragment_name = "lighting_cube.frag.glsl";
+    let fragment_source = include_str!("../shaders/lighting_cube.frag.glsl");
 
-    ShaderSource {
-        vert_name: "lighting_cube.vert.glsl",
-        vert_source: vert_source,
-        frag_name: "lighting_cube.frag.glsl",
-        frag_source: frag_source,
-    }
+    ShaderSourceBuilder::new(
+        vertex_name,
+        vertex_source,
+        fragment_name,
+        fragment_source)
+    .build()
 }
 
-fn send_to_gpu_shaders(_context: &mut backend::OpenGLContext, source: ShaderSource) -> GLuint {
-    let mut vert_reader = io::Cursor::new(source.vert_source);
-    let mut frag_reader = io::Cursor::new(source.frag_source);
-    let result = backend::compile_from_reader(
-        &mut vert_reader, source.vert_name,
-        &mut frag_reader, source.frag_name
-    );
-    let shader = match result {
-        Ok(value) => value,
-        Err(e) => {
-            panic!("Could not compile shaders. Got error: {}", e);
-        }
-    };
-    debug_assert!(shader > 0);
-
-    shader
+fn send_to_gpu_shaders(_context: &mut OpenGLContext, source: &ShaderSource<'static, 'static, 'static>) -> GLuint {
+    backend::compile(source).unwrap()
 }
 
 /// Initialize the logger.
@@ -1009,7 +994,7 @@ fn main() {
 
     //  Load the model data for the cube light shader..
     let mesh_shader_source = create_mesh_shader_source();
-    let mesh_shader = send_to_gpu_shaders(&mut context, mesh_shader_source);
+    let mesh_shader = send_to_gpu_shaders(&mut context, &mesh_shader_source);
     let (
         mesh_vao, 
         _mesh_v_pos_vbo,
@@ -1025,7 +1010,7 @@ fn main() {
 
     // Load the lighting cube model.
     let light_shader_source = create_cube_light_shader_source();
-    let light_shader = send_to_gpu_shaders(&mut context, light_shader_source);
+    let light_shader = send_to_gpu_shaders(&mut context, &light_shader_source);
     let (
         light_vao,
         _light_v_pos_vbo) = send_to_gpu_light_mesh(light_shader, &light_mesh);
