@@ -330,30 +330,9 @@ fn send_to_gpu_uniforms_cube_light_mesh(shader: ShaderHandle, model_mat: &Matrix
 }
 
 fn send_to_gpu_uniforms_camera(shader: ShaderHandle, camera: &PerspectiveFovCamera<f32>) {
-    let camera_proj_mat_loc = unsafe {
-        gl::GetUniformLocation(shader.id, backend::gl_str("camera.projection").as_ptr())
-    };
-    debug_assert!(camera_proj_mat_loc > -1);
-    let camera_view_mat_loc = unsafe {
-        gl::GetUniformLocation(shader.id, backend::gl_str("camera.view").as_ptr())
-    };
-    debug_assert!(camera_view_mat_loc > -1);
-
-    unsafe {
-        gl::UseProgram(shader.id);
-        gl::UniformMatrix4fv(
-            camera_proj_mat_loc, 
-            1, 
-            gl::FALSE, 
-            camera.projection().as_ptr()
-        );
-        gl::UniformMatrix4fv(
-            camera_view_mat_loc, 
-            1, 
-            gl::FALSE, 
-            camera.view_matrix().as_ptr()
-        );
-    }
+    shader.use_program();
+    shader.set_mat4("camera.projection", &camera.projection());
+    shader.set_mat4("camera.view", camera.view_matrix());    
 }
 
 fn send_to_gpu_uniforms_dir_light(shader: ShaderHandle, light: &DirLight<f32>) {

@@ -734,7 +734,7 @@ impl ShaderHandle {
     }
 
     #[inline]
-    pub fn activate(&self) {
+    pub fn use_program(&self) {
         unsafe {
             gl::UseProgram(self.id);
         }
