@@ -751,73 +751,83 @@ impl ShaderHandle {
     }
 
     #[inline]
+    pub fn get_uniform_location(&self, name: &str) -> i32 {
+        let location = unsafe {
+            gl::GetUniformLocation(self.id, gl_str(name).as_ptr())
+        };
+        debug_assert!(location > -1);
+
+        location
+    }
+
+    #[inline]
     pub fn set_bool(&self, name: &str, value: bool) {
+        let location = self.get_uniform_location(name);
         unsafe {
-            let location = gl::GetUniformLocation(self.id, gl_str(name).as_ptr());
             gl::Uniform1i(location, value as i32);
         }
     }
 
     #[inline]
     pub fn set_int(&self, name: &str, value: i32) {
+        let location = self.get_uniform_location(name);
         unsafe {
-            let location = gl::GetUniformLocation(self.id, gl_str(name).as_ptr());
             gl::Uniform1i(location, value);
         }
     }
 
     #[inline]
     pub fn set_float(&self, name: &str, value: f32) {
+        let location = self.get_uniform_location(name);
         unsafe {
-            let location = gl::GetUniformLocation(self.id, gl_str(name).as_ptr());
             gl::Uniform1f(location, value);
         }
     }
 
     #[inline]
     pub fn set_vec2(&self, name: &str, value: &Vector2<f32>) {
+        let location = self.get_uniform_location(name);
         unsafe {
-            let location = gl::GetUniformLocation(self.id, gl_str(name).as_ptr());
             gl::Uniform2fv(location, 1, value.as_ptr());
         }
     }
 
     #[inline]
     pub fn set_vec3(&self, name: &str, value: &Vector3<f32>) {
+        let location = self.get_uniform_location(name);
         unsafe {
-            let location = gl::GetUniformLocation(self.id, gl_str(name).as_ptr());
             gl::Uniform2fv(location, 1, value.as_ptr());
         }
     }
 
     #[inline]
     pub fn set_vec4(&self, name: &str, value: &Vector4<f32>) {
+        let location = self.get_uniform_location(name);
         unsafe {
-            let location = gl::GetUniformLocation(self.id, gl_str(name).as_ptr());
             gl::Uniform2fv(location, 1, value.as_ptr());
         }
     }
 
     #[inline]
     pub fn set_mat2(&self, name: &str, value: &Matrix2<f32>) {
+        let location = self.get_uniform_location(name);
         unsafe {
-            let location = gl::GetUniformLocation(self.id, gl_str(name).as_ptr());
             gl::UniformMatrix2fv(location, 1, gl::FALSE, value.as_ptr());
         }
     }
 
     #[inline]
     pub fn set_mat3(&self, name: &str, value: &Matrix3<f32>) {
+        let location = self.get_uniform_location(name);
         unsafe {
-            let location = gl::GetUniformLocation(self.id, gl_str(name).as_ptr());
             gl::UniformMatrix3fv(location, 1, gl::FALSE, value.as_ptr());
         }
     }
 
     #[inline]
     pub fn set_mat4(&self, name: &str, value: &Matrix4<f32>) {
+        let location = self.get_uniform_location(name);
         unsafe {
-            let location = gl::GetUniformLocation(self.id, gl_str(name).as_ptr());
             gl::UniformMatrix4fv(location, 1, gl::FALSE, value.as_ptr());
         }
     }
