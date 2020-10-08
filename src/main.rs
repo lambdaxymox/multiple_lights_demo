@@ -1066,36 +1066,17 @@ fn main() {
             }
         }
 
-        // Render the cube lights.
-        let light_model_mat = cube_lights[0].model_matrix() * Matrix4::from_affine_scale(0.2);
-        send_to_gpu_uniforms_cube_light_mesh(light_shader, &light_model_mat);
-        unsafe {
-            gl::UseProgram(light_shader.id);
-            gl::BindVertexArray(light_vao);
-            gl::DrawArrays(gl::TRIANGLES, 0, light_mesh.len() as i32);
-        }
-        let light_model_mat = cube_lights[1].model_matrix() * Matrix4::from_affine_scale(0.2);
-        send_to_gpu_uniforms_cube_light_mesh(light_shader, &light_model_mat);
-        unsafe {
-            gl::UseProgram(light_shader.id);
-            gl::BindVertexArray(light_vao);
-            gl::DrawArrays(gl::TRIANGLES, 0, light_mesh.len() as i32);
-        }
-        
-        let light_model_mat = cube_lights[2].model_matrix() * Matrix4::from_affine_scale(0.2);
-        send_to_gpu_uniforms_cube_light_mesh(light_shader, &light_model_mat);
-        unsafe {
-            gl::UseProgram(light_shader.id);
-            gl::BindVertexArray(light_vao);
-            gl::DrawArrays(gl::TRIANGLES, 0, light_mesh.len() as i32);
-        }
+        let scale_matrix = Matrix4::from_affine_scale(0.2);
 
-        let light_model_mat = cube_lights[3].model_matrix() * Matrix4::from_affine_scale(0.2);
-        send_to_gpu_uniforms_cube_light_mesh(light_shader, &light_model_mat);
-        unsafe {
-            gl::UseProgram(light_shader.id);
-            gl::BindVertexArray(light_vao);
-            gl::DrawArrays(gl::TRIANGLES, 0, light_mesh.len() as i32);
+        // Render the cube lights.
+        for cube_light in cube_lights.iter() {
+            let light_model_mat = cube_light.model_matrix() * &scale_matrix;
+            send_to_gpu_uniforms_cube_light_mesh(light_shader, &light_model_mat);
+            unsafe {
+                gl::UseProgram(light_shader.id);
+                gl::BindVertexArray(light_vao);
+                gl::DrawArrays(gl::TRIANGLES, 0, light_mesh.len() as i32);
+            }
         }
 
         context.window.swap_buffers();
