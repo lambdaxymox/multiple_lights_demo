@@ -310,8 +310,9 @@ fn create_spotlight(camera: &PerspectiveFovCamera<f32>) -> SpotLight<f32> {
 fn create_lighting_map() -> LightingMap {
     let diffuse_buffer = include_bytes!("../assets/container2_diffuse.png");
     let specular_buffer = include_bytes!("../assets/container2_specular.png");
+    let emission_buffer = include_bytes!("../assets/matrix.png");
     
-    texture::load_lighting_map(diffuse_buffer, specular_buffer)
+    texture::load_lighting_map(diffuse_buffer, specular_buffer, emission_buffer)
 }
 
 fn send_to_gpu_uniforms_cube_light_mesh(shader: GLuint, model_mat: &Matrix4<f32>) {

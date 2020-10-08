@@ -18,11 +18,12 @@ pub fn load_image(buffer: &[u8]) -> TextureImage2D {
     TextureImage2D::new(width, height, bytes_per_pixel, image_data)
 }
 
-pub fn load_lighting_map(diffuse_buffer: &[u8], specular_buffer: &[u8]) -> LightingMap {
+pub fn load_lighting_map(diffuse_buffer: &[u8], specular_buffer: &[u8], emission_buffer: &[u8]) -> LightingMap {
     let diffuse = load_image(diffuse_buffer);
     let specular = load_image(specular_buffer);
+    let emission = load_image(emission_buffer);
 
-    LightingMap::new(diffuse, specular)
+    LightingMap::new(diffuse, specular, emission)
 }
 
 #[derive(Clone)]
@@ -57,13 +58,15 @@ impl TextureImage2D {
 pub struct LightingMap {
     pub diffuse: TextureImage2D,
     pub specular: TextureImage2D,
+    pub emission: TextureImage2D,
 }
 
 impl LightingMap {
-    pub fn new(diffuse: TextureImage2D, specular: TextureImage2D) -> Self {
+    pub fn new(diffuse: TextureImage2D, specular: TextureImage2D, emission: TextureImage2D) -> Self {
         Self {
             diffuse: diffuse,
             specular: specular,
+            emission: emission,
         }
     }
 }
