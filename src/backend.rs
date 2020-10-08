@@ -796,7 +796,7 @@ impl ShaderHandle {
     pub fn set_vec3(&self, name: &str, value: &Vector3<f32>) {
         let location = self.get_uniform_location(name);
         unsafe {
-            gl::Uniform2fv(location, 1, value.as_ptr());
+            gl::Uniform3fv(location, 1, value.as_ptr());
         }
     }
 
@@ -804,7 +804,7 @@ impl ShaderHandle {
     pub fn set_vec4(&self, name: &str, value: &Vector4<f32>) {
         let location = self.get_uniform_location(name);
         unsafe {
-            gl::Uniform2fv(location, 1, value.as_ptr());
+            gl::Uniform4fv(location, 1, value.as_ptr());
         }
     }
 
