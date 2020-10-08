@@ -400,31 +400,31 @@ fn send_to_gpu_uniforms_dir_light(shader: GLuint, light: &DirLight<f32>) {
 /// `glGetUniformLocation`.
 fn send_to_gpu_uniforms_point_light(shader: GLuint, lights: &[PointLight<f32>; 4]) {
     let light_position_loc = unsafe {
-        gl::GetUniformLocation(shader, backend::gl_str("lights[0].position").as_ptr())
+        gl::GetUniformLocation(shader, backend::gl_str("pointLights[0].position").as_ptr())
     };
     debug_assert!(light_position_loc > -1);
     let light_constant_loc = unsafe {
-        gl::GetUniformLocation(shader, backend::gl_str("lights[0].constant").as_ptr())
+        gl::GetUniformLocation(shader, backend::gl_str("pointLights[0].constant").as_ptr())
     };
     debug_assert!(light_constant_loc > -1);
     let light_linear_loc = unsafe {
-        gl::GetUniformLocation(shader, backend::gl_str("lights[0].linear").as_ptr())
+        gl::GetUniformLocation(shader, backend::gl_str("pointLights[0].linear").as_ptr())
     };
     debug_assert!(light_linear_loc > -1);
     let light_quadratic_loc = unsafe {
-        gl::GetUniformLocation(shader, backend::gl_str("lights[0].quadratic").as_ptr())
+        gl::GetUniformLocation(shader, backend::gl_str("pointLights[0].quadratic").as_ptr())
     };
     debug_assert!(light_linear_loc > -1);
     let light_ambient_loc = unsafe {
-        gl::GetUniformLocation(shader, backend::gl_str("lights[0].ambient").as_ptr())
+        gl::GetUniformLocation(shader, backend::gl_str("pointLights[0].ambient").as_ptr())
     };
     debug_assert!(light_ambient_loc > -1);
     let light_diffuse_loc = unsafe {
-        gl::GetUniformLocation(shader, backend::gl_str("lights[0].diffuse").as_ptr())
+        gl::GetUniformLocation(shader, backend::gl_str("pointLights[0].diffuse").as_ptr())
     };
     debug_assert!(light_diffuse_loc > -1);
     let light_specular_loc = unsafe { 
-        gl::GetUniformLocation(shader, backend::gl_str("lights[0].specular").as_ptr())
+        gl::GetUniformLocation(shader, backend::gl_str("pointLights[0].specular").as_ptr())
     };
     debug_assert!(light_specular_loc > -1);
 
@@ -440,31 +440,31 @@ fn send_to_gpu_uniforms_point_light(shader: GLuint, lights: &[PointLight<f32>; 4
     }
 
     let light_position_world_loc = unsafe {
-        gl::GetUniformLocation(shader, backend::gl_str("lights[1].position").as_ptr())
+        gl::GetUniformLocation(shader, backend::gl_str("pointLights[1].position").as_ptr())
     };
     debug_assert!(light_position_world_loc > -1);
     let light_constant_loc = unsafe {
-        gl::GetUniformLocation(shader, backend::gl_str("lights[1].constant").as_ptr())
+        gl::GetUniformLocation(shader, backend::gl_str("pointLights[1].constant").as_ptr())
     };
     debug_assert!(light_constant_loc > -1);
     let light_linear_loc = unsafe {
-        gl::GetUniformLocation(shader, backend::gl_str("lights[1].linear").as_ptr())
+        gl::GetUniformLocation(shader, backend::gl_str("pointLights[1].linear").as_ptr())
     };
     debug_assert!(light_linear_loc > -1);
     let light_quadratic_loc = unsafe {
-        gl::GetUniformLocation(shader, backend::gl_str("lights[1].quadratic").as_ptr())
+        gl::GetUniformLocation(shader, backend::gl_str("pointLights[1].quadratic").as_ptr())
     };
     debug_assert!(light_linear_loc > -1);
     let light_ambient_loc = unsafe {
-        gl::GetUniformLocation(shader, backend::gl_str("lights[1].ambient").as_ptr())
+        gl::GetUniformLocation(shader, backend::gl_str("pointLights[1].ambient").as_ptr())
     };
     debug_assert!(light_ambient_loc > -1);
     let light_diffuse_loc = unsafe {
-        gl::GetUniformLocation(shader, backend::gl_str("lights[1].diffuse").as_ptr())
+        gl::GetUniformLocation(shader, backend::gl_str("pointLights[1].diffuse").as_ptr())
     };
     debug_assert!(light_diffuse_loc > -1);
     let light_specular_loc = unsafe { 
-        gl::GetUniformLocation(shader, backend::gl_str("lights[1].specular").as_ptr())
+        gl::GetUniformLocation(shader, backend::gl_str("pointLights[1].specular").as_ptr())
     };
     debug_assert!(light_specular_loc > -1);
 
@@ -480,31 +480,31 @@ fn send_to_gpu_uniforms_point_light(shader: GLuint, lights: &[PointLight<f32>; 4
     }
 
     let light_position_world_loc = unsafe {
-        gl::GetUniformLocation(shader, backend::gl_str("lights[2].position").as_ptr())
+        gl::GetUniformLocation(shader, backend::gl_str("pointLights[2].position").as_ptr())
     };
     debug_assert!(light_position_world_loc > -1);
     let light_constant_loc = unsafe {
-        gl::GetUniformLocation(shader, backend::gl_str("lights[2].constant").as_ptr())
+        gl::GetUniformLocation(shader, backend::gl_str("pointLights[2].constant").as_ptr())
     };
     debug_assert!(light_constant_loc > -1);
     let light_linear_loc = unsafe {
-        gl::GetUniformLocation(shader, backend::gl_str("lights[2].linear").as_ptr())
+        gl::GetUniformLocation(shader, backend::gl_str("pointLights[2].linear").as_ptr())
     };
     debug_assert!(light_linear_loc > -1);
     let light_quadratic_loc = unsafe {
-        gl::GetUniformLocation(shader, backend::gl_str("lights[2].quadratic").as_ptr())
+        gl::GetUniformLocation(shader, backend::gl_str("pointLights[2].quadratic").as_ptr())
     };
     debug_assert!(light_linear_loc > -1);
     let light_ambient_loc = unsafe {
-        gl::GetUniformLocation(shader, backend::gl_str("lights[2].ambient").as_ptr())
+        gl::GetUniformLocation(shader, backend::gl_str("pointLights[2].ambient").as_ptr())
     };
     debug_assert!(light_ambient_loc > -1);
     let light_diffuse_loc = unsafe {
-        gl::GetUniformLocation(shader, backend::gl_str("lights[2].diffuse").as_ptr())
+        gl::GetUniformLocation(shader, backend::gl_str("pointLights[2].diffuse").as_ptr())
     };
     debug_assert!(light_diffuse_loc > -1);
     let light_specular_loc = unsafe { 
-        gl::GetUniformLocation(shader, backend::gl_str("lights[2].specular").as_ptr())
+        gl::GetUniformLocation(shader, backend::gl_str("pointLights[2].specular").as_ptr())
     };
     debug_assert!(light_specular_loc > -1);
 
@@ -520,31 +520,31 @@ fn send_to_gpu_uniforms_point_light(shader: GLuint, lights: &[PointLight<f32>; 4
     }
 
     let light_position_world_loc = unsafe {
-        gl::GetUniformLocation(shader, backend::gl_str("lights[3].position").as_ptr())
+        gl::GetUniformLocation(shader, backend::gl_str("pointLights[3].position").as_ptr())
     };
     debug_assert!(light_position_world_loc > -1);
     let light_constant_loc = unsafe {
-        gl::GetUniformLocation(shader, backend::gl_str("lights[3].constant").as_ptr())
+        gl::GetUniformLocation(shader, backend::gl_str("pointLights[3].constant").as_ptr())
     };
     debug_assert!(light_constant_loc > -1);
     let light_linear_loc = unsafe {
-        gl::GetUniformLocation(shader, backend::gl_str("lights[3].linear").as_ptr())
+        gl::GetUniformLocation(shader, backend::gl_str("pointLights[3].linear").as_ptr())
     };
     debug_assert!(light_linear_loc > -1);
     let light_quadratic_loc = unsafe {
-        gl::GetUniformLocation(shader, backend::gl_str("lights[3].quadratic").as_ptr())
+        gl::GetUniformLocation(shader, backend::gl_str("pointLights[3].quadratic").as_ptr())
     };
     debug_assert!(light_linear_loc > -1);
     let light_ambient_loc = unsafe {
-        gl::GetUniformLocation(shader, backend::gl_str("lights[3].ambient").as_ptr())
+        gl::GetUniformLocation(shader, backend::gl_str("pointLights[3].ambient").as_ptr())
     };
     debug_assert!(light_ambient_loc > -1);
     let light_diffuse_loc = unsafe {
-        gl::GetUniformLocation(shader, backend::gl_str("lights[3].diffuse").as_ptr())
+        gl::GetUniformLocation(shader, backend::gl_str("pointLights[3].diffuse").as_ptr())
     };
     debug_assert!(light_diffuse_loc > -1);
     let light_specular_loc = unsafe { 
-        gl::GetUniformLocation(shader, backend::gl_str("lights[3].specular").as_ptr())
+        gl::GetUniformLocation(shader, backend::gl_str("pointLights[3].specular").as_ptr())
     };
     debug_assert!(light_specular_loc > -1);
 
@@ -570,43 +570,43 @@ fn send_to_gpu_uniforms_point_light(shader: GLuint, lights: &[PointLight<f32>; 4
 /// `glGetUniformLocation`.
 fn send_to_gpu_uniforms_spotlight(shader: GLuint, light: &SpotLight<f32>) {
     let light_position_world_loc = unsafe {
-        gl::GetUniformLocation(shader, backend::gl_str("light.position").as_ptr())
+        gl::GetUniformLocation(shader, backend::gl_str("spotLight.position").as_ptr())
     };
     debug_assert!(light_position_world_loc > -1);
     let light_direction_loc = unsafe {
-        gl::GetUniformLocation(shader, backend::gl_str("light.direction").as_ptr())
+        gl::GetUniformLocation(shader, backend::gl_str("spotLight.direction").as_ptr())
     };
     debug_assert!(light_direction_loc > -1);
     let light_cutoff_loc = unsafe {
-        gl::GetUniformLocation(shader, backend::gl_str("light.cutOff").as_ptr())
+        gl::GetUniformLocation(shader, backend::gl_str("spotLight.cutOff").as_ptr())
     };
     debug_assert!(light_cutoff_loc > -1);
     let light_outer_cutoff_loc = unsafe {
-        gl::GetUniformLocation(shader, backend::gl_str("light.outerCutOff").as_ptr())
+        gl::GetUniformLocation(shader, backend::gl_str("spotLight.outerCutOff").as_ptr())
     };
     debug_assert!(light_outer_cutoff_loc > -1);
     let light_ambient_loc = unsafe {
-        gl::GetUniformLocation(shader, backend::gl_str("light.ambient").as_ptr())
+        gl::GetUniformLocation(shader, backend::gl_str("spotLight.ambient").as_ptr())
     };
     debug_assert!(light_ambient_loc > -1);
     let light_diffuse_loc = unsafe {
-        gl::GetUniformLocation(shader, backend::gl_str("light.diffuse").as_ptr())
+        gl::GetUniformLocation(shader, backend::gl_str("spotLight.diffuse").as_ptr())
     };
     debug_assert!(light_diffuse_loc > -1);
     let light_specular_loc = unsafe { 
-        gl::GetUniformLocation(shader, backend::gl_str("light.specular").as_ptr())
+        gl::GetUniformLocation(shader, backend::gl_str("spotLight.specular").as_ptr())
     };
     debug_assert!(light_specular_loc > -1);
     let light_constant_loc = unsafe {
-        gl::GetUniformLocation(shader, backend::gl_str("light.constant").as_ptr())
+        gl::GetUniformLocation(shader, backend::gl_str("spotLight.constant").as_ptr())
     };
     debug_assert!(light_constant_loc > -1);
     let light_linear_loc = unsafe {
-        gl::GetUniformLocation(shader, backend::gl_str("light.linear").as_ptr())
+        gl::GetUniformLocation(shader, backend::gl_str("spotLight.linear").as_ptr())
     };
     debug_assert!(light_linear_loc > -1);
     let light_quadratic_loc = unsafe {
-        gl::GetUniformLocation(shader, backend::gl_str("light.quadratic").as_ptr())
+        gl::GetUniformLocation(shader, backend::gl_str("spotLight.quadratic").as_ptr())
     };
     debug_assert!(light_quadratic_loc > -1);
 
