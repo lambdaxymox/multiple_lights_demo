@@ -24,7 +24,6 @@ use cglinalg::{
     Degrees,
     Matrix4,
     Radians,
-    Array,
     Vector3,
     Identity,
     Unit,
@@ -34,8 +33,6 @@ use cgperspective::{
     CameraMovement,
     CameraAttitudeSpec,
     PerspectiveFovSpec,
-    PerspectiveFovProjection,
-    FreeKinematics,
     FreeKinematicsSpec,
     Camera
 };
@@ -389,60 +386,16 @@ fn send_to_gpu_uniforms_point_lights(shader: ShaderHandle, lights: &[PointLight<
 /// will cause OpenGL to return a `GL_INVALID_VALUE` on a call to 
 /// `glGetUniformLocation`.
 fn send_to_gpu_uniforms_spotlight(shader: ShaderHandle, light: &SpotLight<f32>) {
-    let light_position_world_loc = unsafe {
-        gl::GetUniformLocation(shader.id, backend::gl_str("spotLight.position").as_ptr())
-    };
-    debug_assert!(light_position_world_loc > -1);
-    let light_direction_loc = unsafe {
-        gl::GetUniformLocation(shader.id, backend::gl_str("spotLight.direction").as_ptr())
-    };
-    debug_assert!(light_direction_loc > -1);
-    let light_cutoff_loc = unsafe {
-        gl::GetUniformLocation(shader.id, backend::gl_str("spotLight.cutOff").as_ptr())
-    };
-    debug_assert!(light_cutoff_loc > -1);
-    let light_outer_cutoff_loc = unsafe {
-        gl::GetUniformLocation(shader.id, backend::gl_str("spotLight.outerCutOff").as_ptr())
-    };
-    debug_assert!(light_outer_cutoff_loc > -1);
-    let light_ambient_loc = unsafe {
-        gl::GetUniformLocation(shader.id, backend::gl_str("spotLight.ambient").as_ptr())
-    };
-    debug_assert!(light_ambient_loc > -1);
-    let light_diffuse_loc = unsafe {
-        gl::GetUniformLocation(shader.id, backend::gl_str("spotLight.diffuse").as_ptr())
-    };
-    debug_assert!(light_diffuse_loc > -1);
-    let light_specular_loc = unsafe { 
-        gl::GetUniformLocation(shader.id, backend::gl_str("spotLight.specular").as_ptr())
-    };
-    debug_assert!(light_specular_loc > -1);
-    let light_constant_loc = unsafe {
-        gl::GetUniformLocation(shader.id, backend::gl_str("spotLight.constant").as_ptr())
-    };
-    debug_assert!(light_constant_loc > -1);
-    let light_linear_loc = unsafe {
-        gl::GetUniformLocation(shader.id, backend::gl_str("spotLight.linear").as_ptr())
-    };
-    debug_assert!(light_linear_loc > -1);
-    let light_quadratic_loc = unsafe {
-        gl::GetUniformLocation(shader.id, backend::gl_str("spotLight.quadratic").as_ptr())
-    };
-    debug_assert!(light_quadratic_loc > -1);
-
-    unsafe {
-        gl::UseProgram(shader.id);
-        gl::Uniform3fv(light_position_world_loc, 1, light.position.as_ptr());
-        gl::Uniform3fv(light_direction_loc, 1, light.direction.as_ptr());
-        gl::Uniform1f(light_cutoff_loc, light.cutoff);
-        gl::Uniform1f(light_outer_cutoff_loc, light.outer_cutoff);
-        gl::Uniform3fv(light_ambient_loc, 1, light.ambient.as_ptr());
-        gl::Uniform3fv(light_diffuse_loc, 1, light.diffuse.as_ptr());
-        gl::Uniform3fv(light_specular_loc, 1, light.specular.as_ptr());
-        gl::Uniform1f(light_constant_loc, light.constant);
-        gl::Uniform1f(light_linear_loc, light.linear);
-        gl::Uniform1f(light_quadratic_loc, light.quadratic);
-    }
+    shader.set_vec3("spotLight.position", &light.position);
+    shader.set_vec3("spotLight.direction", &light.direction);
+    shader.set_float("spotLight.cutOff", light.cutoff);
+    shader.set_float("spotLight.outerCutOff", light.outer_cutoff);
+    shader.set_vec3("spotLight.ambient", &light.ambient);
+    shader.set_vec3("spotLight.diffuse", &light.diffuse);
+    shader.set_vec3("spotLight.specular", &light.specular);
+    shader.set_float("spotLight.constant", light.constant);
+    shader.set_float("spotLight.linear", light.linear);
+    shader.set_float("spotLight.quadratic", light.quadratic);
 }
 
 fn send_to_gpu_textures_material(lighting_map: &LightingMap) -> (GLuint, GLuint, GLuint) {
@@ -490,24 +443,8 @@ fn send_to_gpu_uniforms_material(shader: ShaderHandle, uniforms: MaterialUniform
 
 fn send_to_gpu_mesh(shader: ShaderHandle, mesh: &ObjMesh) -> (GLuint, GLuint, GLuint, GLuint) {
     let v_pos_loc = shader.get_attrib_location("aPos");
-    /*
-    let v_pos_loc = unsafe {
-        gl::GetAttribLocation(shader, backend::gl_str("aPos").as_ptr())
-    };
-    debug_assert!(v_pos_loc > -1);
-    let v_pos_loc = v_pos_loc as u32;
-    */
-    let v_tex_loc = unsafe {
-        gl::GetAttribLocation(shader.id, backend::gl_str("aTexCoords").as_ptr())
-    };
-    debug_assert!(v_tex_loc > -1);
-    let v_tex_loc = v_tex_loc as u32;
-
-    let v_norm_loc = unsafe {
-        gl::GetAttribLocation(shader.id, backend::gl_str("aNormal").as_ptr())
-    };
-    debug_assert!(v_norm_loc > -1);
-    let v_norm_loc = v_norm_loc as u32;
+    let v_tex_loc = shader.get_attrib_location("aTexCoords");
+    let v_norm_loc = shader.get_attrib_location("aNormal");
 
     let mut v_pos_vbo = 0;
     unsafe {
@@ -574,11 +511,7 @@ fn send_to_gpu_mesh(shader: ShaderHandle, mesh: &ObjMesh) -> (GLuint, GLuint, GL
 }
 
 fn send_to_gpu_light_mesh(shader: ShaderHandle, mesh: &ObjMesh) -> (GLuint, GLuint) {
-    let v_pos_loc = unsafe {
-        gl::GetAttribLocation(shader.id, backend::gl_str("v_pos").as_ptr())
-    };
-    debug_assert!(v_pos_loc > -1);
-    let v_pos_loc = v_pos_loc as u32;
+    let v_pos_loc = shader.get_attrib_location("v_pos");
 
     let mut v_pos_vbo = 0;
     unsafe {
