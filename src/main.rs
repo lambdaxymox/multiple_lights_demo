@@ -207,179 +207,112 @@ fn create_camera(width: u32, height: u32) -> PerspectiveFovCamera<f32> {
     Camera::new(&model_spec, &attitude_spec, &kinematics_spec)
 }
 
-fn create_cube_lights(scene_center_world: &Vector3<f32>) -> [CubeLight<f32>; 3] {
+fn create_cube_lights(scene_center_world: &Vector3<f32>) -> [PointLight<f32>; 4] {
+    let position_0 = Vector3::new(0.7, 0.2, 2.0);
     let ambient_0 = Vector3::new(0.2, 0.2, 0.2);
     let diffuse_0 = Vector3::new(0.5, 0.5, 0.5);
     let specular_0 = Vector3::new(1.0, 1.0, 1.0);
-    let model_spec_0 = PointLightModelSpec::new(
+    let constant_0 = 1.0;
+    let linear_0 = 0.09;
+    let quadratic_0 = 0.032;
+    let light_0 = PointLight::new(
+        position_0,
+        constant_0,
+        linear_0,
+        quadratic_0,
         ambient_0, 
         diffuse_0, 
         specular_0
     );
 
-    let orbital_axis_0 = Vector3::new(0.0, 1.0, 1.0).normalize();
-    let orbital_speed_0 = 3.14159265;
-    let radial_speed_0 = 0.0;
-    let center_of_oscillation_0 = Vector3::new(3.0, 0.0, 0.0);
-    let radius_of_oscillation_0 = 0.4;
-    let kinematics_spec_0 = OrbitalKinematicsSpec::new(
-        *scene_center_world, 
-        radial_speed_0, 
-        center_of_oscillation_0, 
-        radius_of_oscillation_0, 
-        orbital_axis_0, 
-        orbital_speed_0
-    );
-    let kinematics_0 = OrbitalKinematics::from_spec(&kinematics_spec_0);
-
-    let position_0 = center_of_oscillation_0;
-    let forward_0 = -Vector3::unit_z();
-    let right_0 = Vector3::unit_x();
-    let up_0 = Vector3::unit_y();
-    let axis_0 = forward_0;
-    let attitude_0 = LightAttitudeSpec::new(
-        position_0,
-        forward_0,
-        right_0,
-        up_0,
-        axis_0
-    );
-    
+    let position_1 = Vector3::new(2.3, -3.3, -4.0);
     let ambient_1 = Vector3::new(0.2, 0.2, 0.2);   
     let diffuse_1 = Vector3::new(0.5, 0.5, 0.5);
     let specular_1 = Vector3::new(1.0, 1.0, 1.0);
-    let model_spec_1 = PointLightModelSpec::new(
+    let constant_1 = 1.0;
+    let linear_1 = 0.09;
+    let quadratic_1 = 0.032;
+    let light_1 = PointLight::new(
+        position_1,
+        constant_1,
+        linear_1,
+        quadratic_1,
         ambient_1,
         diffuse_1,
         specular_1
     );
 
-    let orbital_axis_1 = Vector3::new(0.0, 0.0, 1.0).normalize();
-    let orbital_speed_1 = 1.5;
-    let radial_speed_1 = 0.0;
-    let center_of_oscillation_1 = Vector3::new(0.0, 6.0, 0.0);
-    let radius_of_oscillation_1 = 1.0;
-    let kinematics_spec_1 = OrbitalKinematicsSpec::new(
-        *scene_center_world, 
-        radial_speed_1, 
-        center_of_oscillation_1, 
-        radius_of_oscillation_1, 
-        orbital_axis_1, 
-        orbital_speed_1
-    );
-    let kinematics_1 = OrbitalKinematics::from_spec(&kinematics_spec_1);
 
-    let position_1 = center_of_oscillation_1;
-    let forward_1 = -Vector3::unit_z();
-    let right_1 = Vector3::unit_x();
-    let up_1 = Vector3::unit_y();
-    let axis_1 = forward_0;
-    let attitude_1 = LightAttitudeSpec::new(
-        position_1,
-        forward_1,
-        right_1,
-        up_1,
-        axis_1
-    );
-    
+    let position_2 = Vector3::new(-4.0, 2.0, -12.0);
     let ambient_2 = Vector3::new(0.2, 0.2, 0.2);
     let diffuse_2 = Vector3::new(0.5, 0.5, 0.5);
     let specular_2 = Vector3::new(1.0, 1.0, 1.0);
-    let model_spec_2 = PointLightModelSpec::new(
+    let constant_2 = 1.0;
+    let linear_2 = 0.09;
+    let quadratic_2 = 0.032;
+    let light_2 = PointLight::new(
+        position_2,
+        constant_2,
+        linear_2,
+        quadratic_2,
         ambient_2, 
         diffuse_2, 
         specular_2
     );
 
-    let orbital_axis_2 = Vector3::new(1.0, 0.0, 0.0).normalize();
-    let orbital_speed_2 = 0.5;
-    let radial_speed_2 = 0.0;
-    let center_of_oscillation_2 = Vector3::new(0.0, 5.0, 5.0);
-    let radius_of_oscillation_2 = 0.25;
-    let kinematics_spec_2 = OrbitalKinematicsSpec::new(
-        *scene_center_world, 
-        radial_speed_2, 
-        center_of_oscillation_2, 
-        radius_of_oscillation_2, 
-        orbital_axis_2, 
-        orbital_speed_2
-    );
-    let kinematics_2 = OrbitalKinematics::from_spec(&kinematics_spec_2);
-
-    let position_2 = center_of_oscillation_2;
-    let forward_2 = -Vector3::unit_z();
-    let right_2 = Vector3::unit_x();
-    let up_2 = Vector3::unit_y();
-    let axis_2 = forward_0;
-    let attitude_2 = LightAttitudeSpec::new(
-        position_2,
-        forward_2,
-        right_2,
-        up_2,
-        axis_2
+    let position_3 = Vector3::new(0.0, 0.0, -3.0);
+    let ambient_3 = Vector3::new(0.05, 0.05, 0.05);
+    let diffuse_3 = Vector3::new(0.8, 0.8, 0.8);
+    let specular_3 = Vector3::new(1.0, 1.0, 1.0);
+    let constant_3 = 1.0;
+    let linear_3 = 0.09;
+    let quadratic_3 = 0.032;
+    let light_3 = PointLight::new(
+        position_3,
+        constant_3,
+        linear_3,
+        quadratic_3,
+        ambient_3,
+        diffuse_3,
+        specular_3
     );
 
-    let point_light_0 = Light::new(
-        &model_spec_0, 
-        &attitude_0, 
-    );
-    let point_light_1 = Light::new(
-        &model_spec_1, 
-        &attitude_1, 
-    );
-    let point_light_2 = Light::new(
-        &model_spec_2, 
-        &attitude_2, 
-    );
-
-    let light_0 = CubeLight::new(point_light_0, kinematics_0);
-    let light_1 = CubeLight::new(point_light_1, kinematics_1);
-    let light_2 = CubeLight::new(point_light_2, kinematics_2);
-
-    [light_0, light_1, light_2]
+    [light_0, light_1, light_2, light_3]
 }
 
-fn create_flashlight(camera: &PerspectiveFovCamera<f32>) -> FlashLight<f32> {  
-    let position_0 = camera.position();
-    let forward_0 = camera.forward_axis();
-    let up_0 = camera.up_axis();
-    let right_0 = camera.right_axis();
-    let axis_0 = camera.rotation_axis();
+fn create_directional_light() -> DirLight<f32> {
+    let direction = Vector3::new(-0.2, -1.0, -0.3);
+    let ambient = Vector3::new(0.05, 0.05, 0.05);
+    let diffuse = Vector3::new(0.4, 0.4, 0.4);
+    let specular = Vector3::new(0.5, 0.5, 0.5);
 
-    let direction_0 = camera.forward_axis();
-    let cutoff_0 = Degrees(12.5).cos();
-    let outer_cutoff_0 = Degrees(17.5).cos();
-    let ambient_0 = Vector3::new(0.1, 0.1, 0.1);
-    let diffuse_0 = Vector3::new(0.8, 0.8, 0.8);
-    let specular_0 = Vector3::new(1.0, 1.0, 1.0);
-    let constant_0 = 1.0;
-    let linear_0 = 0.09;
-    let quadratic_0 = 0.032;
-    let model_spec_0 = SpotLightModelSpec::new(
-        cutoff_0,
-        outer_cutoff_0,
-        ambient_0,
-        diffuse_0,
-        specular_0,
-        constant_0,
-        linear_0,
-        quadratic_0,
-    );
-    let attitude_spec_0 = LightAttitudeSpec::new(
-        position_0,
-        forward_0,
-        right_0,
-        up_0,
-        axis_0
-    );
-    let kinematics_0 = FlashLightKinematics::new(camera);
-    let spot_light_0 = Light::new(
-        &model_spec_0, 
-        &attitude_spec_0,
-    );
-    let light_0 = FlashLight::new(spot_light_0, kinematics_0);
-    
-    light_0
+    DirLight::new(direction, ambient, diffuse, specular)
+}
+
+fn create_spotlight(camera: &PerspectiveFovCamera<f32>) -> SpotLight<f32> {
+    let position = camera.position();
+    let direction = camera.forward_axis();
+    let ambient = Vector3::new(0.0, 0.0, 0.0);
+    let diffuse = Vector3::new(1.0, 1.0, 1.0);
+    let specular = Vector3::new(1.0, 1.0, 1.0);
+    let constant = 1.0;
+    let linear = 0.09;
+    let quadratic = 0.032;
+    let cutoff = Degrees(12.5).cos();
+    let outer_cutoff = Degrees(15.0).cos();
+
+    SpotLight::new(
+        position,
+        direction,
+        cutoff,
+        outer_cutoff,
+        constant,
+        linear,
+        quadratic,
+        ambient,
+        diffuse,
+        specular
+    )
 }
 
 fn create_lighting_map() -> LightingMap {
@@ -390,18 +323,6 @@ fn create_lighting_map() -> LightingMap {
 }
 
 fn send_to_gpu_uniforms_cube_light_mesh(shader: GLuint, model_mat: &Matrix4<f32>) {
-    let model_mat_loc = unsafe {
-        gl::GetUniformLocation(shader, backend::gl_str("model").as_ptr())
-    };
-    debug_assert!(model_mat_loc > -1);
-    
-    unsafe {
-        gl::UseProgram(shader);
-        gl::UniformMatrix4fv(model_mat_loc, 1, gl::FALSE, model_mat.as_ptr());
-    }
-}
-
-fn send_to_gpu_uniforms_flashlight_mesh(shader: GLuint, model_mat: &Matrix4<f32>) {
     let model_mat_loc = unsafe {
         gl::GetUniformLocation(shader, backend::gl_str("model").as_ptr())
     };
@@ -442,17 +363,58 @@ fn send_to_gpu_uniforms_camera(
     }
 }
 
-/// Send the uniforms for the lighting data to the GPU for the mesh.
-/// Note that in order to render multiple lights in the shader, we define an array
-/// of structs. In OpenGL, each elementary member of a struct is considered to be a uniform variable,
-/// and each struct is a struct of uniforms. Consequently, if every element of an array of struct uniforms
-/// is not used in the shader, OpenGL will optimize those uniform locations out at runtime. This
-/// will cause OpenGL to return a `GL_INVALID_VALUE` on a call to `glGetUniformLocation`.
-fn send_to_gpu_uniforms_cube_light(shader: GLuint, lights: &[CubeLight<f32>; 3]) {
-    let light_position_world_loc = unsafe {
-        gl::GetUniformLocation(shader, backend::gl_str("lights[0].position_world").as_ptr())
+fn send_to_gpu_uniforms_dir_light(shader: GLuint, light: &DirLight<f32>) {
+    let light_direction_loc = unsafe {
+        gl::GetUniformLocation(shader, backend::gl_str("dirLight.position").as_ptr())
     };
-    debug_assert!(light_position_world_loc > -1);
+    debug_assert!(light_direction_loc > -1);
+    let light_ambient_loc = unsafe {
+        gl::GetUniformLocation(shader, backend::gl_str("dirLight.ambient").as_ptr())
+    };
+    debug_assert!(light_ambient_loc > -1);
+    let light_diffuse_loc = unsafe {
+        gl::GetUniformLocation(shader, backend::gl_str("dirLight.diffuse").as_ptr())
+    };
+    debug_assert!(light_diffuse_loc > -1);
+    let light_specular_loc = unsafe {
+        gl::GetUniformLocation(shader, backend::gl_str("dirLight.specular").as_ptr())
+    };
+    debug_assert!(light_specular_loc > -1);
+
+    unsafe {
+        gl::UseProgram(shader);
+        gl::Uniform3fv(light_direction_loc, 1, light.direction.as_ptr());
+        gl::Uniform3fv(light_ambient_loc, 1, light.ambient.as_ptr());
+        gl::Uniform3fv(light_diffuse_loc, 1, light.diffuse.as_ptr());
+        gl::Uniform3fv(light_specular_loc, 1, light.specular.as_ptr());
+    }
+}
+
+/// Send the uniforms for the lighting data to the GPU for the mesh.
+/// Note that in order to render multiple lights in the shader, we define an 
+/// array of structs. In OpenGL, each elementary member of a struct is 
+/// considered to be a uniform variable, and each struct is a struct of uniforms. 
+/// Consequently, if every element of an array of struct uniforms is not used in 
+/// the shader, OpenGL will optimize those uniform locations out at runtime. This
+/// will cause OpenGL to return a `GL_INVALID_VALUE` on a call to 
+/// `glGetUniformLocation`.
+fn send_to_gpu_uniforms_point_light(shader: GLuint, lights: &[PointLight<f32>; 4]) {
+    let light_position_loc = unsafe {
+        gl::GetUniformLocation(shader, backend::gl_str("lights[0].position").as_ptr())
+    };
+    debug_assert!(light_position_loc > -1);
+    let light_constant_loc = unsafe {
+        gl::GetUniformLocation(shader, backend::gl_str("lights[0].constant").as_ptr())
+    };
+    debug_assert!(light_constant_loc > -1);
+    let light_linear_loc = unsafe {
+        gl::GetUniformLocation(shader, backend::gl_str("lights[0].linear").as_ptr())
+    };
+    debug_assert!(light_linear_loc > -1);
+    let light_quadratic_loc = unsafe {
+        gl::GetUniformLocation(shader, backend::gl_str("lights[0].quadratic").as_ptr())
+    };
+    debug_assert!(light_linear_loc > -1);
     let light_ambient_loc = unsafe {
         gl::GetUniformLocation(shader, backend::gl_str("lights[0].ambient").as_ptr())
     };
@@ -466,19 +428,33 @@ fn send_to_gpu_uniforms_cube_light(shader: GLuint, lights: &[CubeLight<f32>; 3])
     };
     debug_assert!(light_specular_loc > -1);
 
-    let model_0 = lights[0].model();
     unsafe {
         gl::UseProgram(shader);
-        gl::Uniform3fv(light_position_world_loc, 1, lights[0].position().as_ptr());
-        gl::Uniform3fv(light_ambient_loc, 1, model_0.ambient.as_ptr());
-        gl::Uniform3fv(light_diffuse_loc, 1, model_0.diffuse.as_ptr());
-        gl::Uniform3fv(light_specular_loc, 1, model_0.specular.as_ptr());
+        gl::Uniform3fv(light_position_loc, 1, lights[0].position.as_ptr());
+        gl::Uniform1f(light_constant_loc, lights[0].constant);
+        gl::Uniform1f(light_linear_loc, lights[0].linear);
+        gl::Uniform1f(light_quadratic_loc, lights[0].quadratic);
+        gl::Uniform3fv(light_ambient_loc, 1, lights[0].ambient.as_ptr());
+        gl::Uniform3fv(light_diffuse_loc, 1, lights[0].diffuse.as_ptr());
+        gl::Uniform3fv(light_specular_loc, 1, lights[0].specular.as_ptr());
     }
 
     let light_position_world_loc = unsafe {
-        gl::GetUniformLocation(shader, backend::gl_str("lights[1].position_world").as_ptr())
+        gl::GetUniformLocation(shader, backend::gl_str("lights[1].position").as_ptr())
     };
     debug_assert!(light_position_world_loc > -1);
+    let light_constant_loc = unsafe {
+        gl::GetUniformLocation(shader, backend::gl_str("lights[1].constant").as_ptr())
+    };
+    debug_assert!(light_constant_loc > -1);
+    let light_linear_loc = unsafe {
+        gl::GetUniformLocation(shader, backend::gl_str("lights[1].linear").as_ptr())
+    };
+    debug_assert!(light_linear_loc > -1);
+    let light_quadratic_loc = unsafe {
+        gl::GetUniformLocation(shader, backend::gl_str("lights[1].quadratic").as_ptr())
+    };
+    debug_assert!(light_linear_loc > -1);
     let light_ambient_loc = unsafe {
         gl::GetUniformLocation(shader, backend::gl_str("lights[1].ambient").as_ptr())
     };
@@ -492,19 +468,33 @@ fn send_to_gpu_uniforms_cube_light(shader: GLuint, lights: &[CubeLight<f32>; 3])
     };
     debug_assert!(light_specular_loc > -1);
 
-    let model_1 = lights[1].model();
     unsafe {
         gl::UseProgram(shader);
-        gl::Uniform3fv(light_position_world_loc, 1, lights[1].position().as_ptr());
-        gl::Uniform3fv(light_ambient_loc, 1, model_1.ambient.as_ptr());
-        gl::Uniform3fv(light_diffuse_loc, 1, model_1.diffuse.as_ptr());
-        gl::Uniform3fv(light_specular_loc, 1, model_1.specular.as_ptr());
+        gl::Uniform3fv(light_position_world_loc, 1, lights[1].position.as_ptr());
+        gl::Uniform1f(light_constant_loc, lights[1].constant);
+        gl::Uniform1f(light_linear_loc, lights[1].linear);
+        gl::Uniform1f(light_quadratic_loc, lights[1].quadratic);
+        gl::Uniform3fv(light_ambient_loc, 1, lights[1].ambient.as_ptr());
+        gl::Uniform3fv(light_diffuse_loc, 1, lights[1].diffuse.as_ptr());
+        gl::Uniform3fv(light_specular_loc, 1, lights[1].specular.as_ptr());
     }
 
     let light_position_world_loc = unsafe {
-        gl::GetUniformLocation(shader, backend::gl_str("lights[2].position_world").as_ptr())
+        gl::GetUniformLocation(shader, backend::gl_str("lights[2].position").as_ptr())
     };
     debug_assert!(light_position_world_loc > -1);
+    let light_constant_loc = unsafe {
+        gl::GetUniformLocation(shader, backend::gl_str("lights[2].constant").as_ptr())
+    };
+    debug_assert!(light_constant_loc > -1);
+    let light_linear_loc = unsafe {
+        gl::GetUniformLocation(shader, backend::gl_str("lights[2].linear").as_ptr())
+    };
+    debug_assert!(light_linear_loc > -1);
+    let light_quadratic_loc = unsafe {
+        gl::GetUniformLocation(shader, backend::gl_str("lights[2].quadratic").as_ptr())
+    };
+    debug_assert!(light_linear_loc > -1);
     let light_ambient_loc = unsafe {
         gl::GetUniformLocation(shader, backend::gl_str("lights[2].ambient").as_ptr())
     };
@@ -518,13 +508,55 @@ fn send_to_gpu_uniforms_cube_light(shader: GLuint, lights: &[CubeLight<f32>; 3])
     };
     debug_assert!(light_specular_loc > -1);
 
-    let model_2 = lights[2].model();
     unsafe {
         gl::UseProgram(shader);
-        gl::Uniform3fv(light_position_world_loc, 1, lights[2].position().as_ptr());
-        gl::Uniform3fv(light_ambient_loc, 1, model_2.ambient.as_ptr());
-        gl::Uniform3fv(light_diffuse_loc, 1, model_2.diffuse.as_ptr());
-        gl::Uniform3fv(light_specular_loc, 1, model_2.specular.as_ptr());
+        gl::Uniform3fv(light_position_world_loc, 1, lights[2].position.as_ptr());
+        gl::Uniform1f(light_constant_loc, lights[2].constant);
+        gl::Uniform1f(light_linear_loc, lights[2].linear);
+        gl::Uniform1f(light_quadratic_loc, lights[2].quadratic);
+        gl::Uniform3fv(light_ambient_loc, 1, lights[2].ambient.as_ptr());
+        gl::Uniform3fv(light_diffuse_loc, 1, lights[2].diffuse.as_ptr());
+        gl::Uniform3fv(light_specular_loc, 1, lights[2].specular.as_ptr());
+    }
+
+    let light_position_world_loc = unsafe {
+        gl::GetUniformLocation(shader, backend::gl_str("lights[3].position").as_ptr())
+    };
+    debug_assert!(light_position_world_loc > -1);
+    let light_constant_loc = unsafe {
+        gl::GetUniformLocation(shader, backend::gl_str("lights[3].constant").as_ptr())
+    };
+    debug_assert!(light_constant_loc > -1);
+    let light_linear_loc = unsafe {
+        gl::GetUniformLocation(shader, backend::gl_str("lights[3].linear").as_ptr())
+    };
+    debug_assert!(light_linear_loc > -1);
+    let light_quadratic_loc = unsafe {
+        gl::GetUniformLocation(shader, backend::gl_str("lights[3].quadratic").as_ptr())
+    };
+    debug_assert!(light_linear_loc > -1);
+    let light_ambient_loc = unsafe {
+        gl::GetUniformLocation(shader, backend::gl_str("lights[3].ambient").as_ptr())
+    };
+    debug_assert!(light_ambient_loc > -1);
+    let light_diffuse_loc = unsafe {
+        gl::GetUniformLocation(shader, backend::gl_str("lights[3].diffuse").as_ptr())
+    };
+    debug_assert!(light_diffuse_loc > -1);
+    let light_specular_loc = unsafe { 
+        gl::GetUniformLocation(shader, backend::gl_str("lights[3].specular").as_ptr())
+    };
+    debug_assert!(light_specular_loc > -1);
+
+    unsafe {
+        gl::UseProgram(shader);
+        gl::Uniform3fv(light_position_world_loc, 1, lights[3].position.as_ptr());
+        gl::Uniform1f(light_constant_loc, lights[3].constant);
+        gl::Uniform1f(light_linear_loc, lights[3].linear);
+        gl::Uniform1f(light_quadratic_loc, lights[3].quadratic);
+        gl::Uniform3fv(light_ambient_loc, 1, lights[3].ambient.as_ptr());
+        gl::Uniform3fv(light_diffuse_loc, 1, lights[3].diffuse.as_ptr());
+        gl::Uniform3fv(light_specular_loc, 1, lights[3].specular.as_ptr());
     }
 }
 
@@ -536,7 +568,7 @@ fn send_to_gpu_uniforms_cube_light(shader: GLuint, lights: &[CubeLight<f32>; 3])
 /// the shader, OpenGL will optimize those uniform locations out at runtime. This
 /// will cause OpenGL to return a `GL_INVALID_VALUE` on a call to 
 /// `glGetUniformLocation`.
-fn send_to_gpu_uniforms_flashlight(shader: GLuint, light: &FlashLight<f32>) {
+fn send_to_gpu_uniforms_spotlight(shader: GLuint, light: &SpotLight<f32>) {
     let light_position_world_loc = unsafe {
         gl::GetUniformLocation(shader, backend::gl_str("light.position").as_ptr())
     };
@@ -578,19 +610,18 @@ fn send_to_gpu_uniforms_flashlight(shader: GLuint, light: &FlashLight<f32>) {
     };
     debug_assert!(light_quadratic_loc > -1);
 
-    let model = light.model();
     unsafe {
         gl::UseProgram(shader);
-        gl::Uniform3fv(light_position_world_loc, 1, light.position().as_ptr());
-        gl::Uniform3fv(light_direction_loc, 1, light.direction().as_ptr());
-        gl::Uniform1f(light_cutoff_loc, model.cutoff);
-        gl::Uniform1f(light_outer_cutoff_loc, model.outer_cutoff);
-        gl::Uniform3fv(light_ambient_loc, 1, model.ambient.as_ptr());
-        gl::Uniform3fv(light_diffuse_loc, 1, model.diffuse.as_ptr());
-        gl::Uniform3fv(light_specular_loc, 1, model.specular.as_ptr());
-        gl::Uniform1f(light_constant_loc, model.constant);
-        gl::Uniform1f(light_linear_loc, model.linear);
-        gl::Uniform1f(light_quadratic_loc, model.quadratic);
+        gl::Uniform3fv(light_position_world_loc, 1, light.position.as_ptr());
+        gl::Uniform3fv(light_direction_loc, 1, light.direction.as_ptr());
+        gl::Uniform1f(light_cutoff_loc, light.cutoff);
+        gl::Uniform1f(light_outer_cutoff_loc, light.outer_cutoff);
+        gl::Uniform3fv(light_ambient_loc, 1, light.ambient.as_ptr());
+        gl::Uniform3fv(light_diffuse_loc, 1, light.diffuse.as_ptr());
+        gl::Uniform3fv(light_specular_loc, 1, light.specular.as_ptr());
+        gl::Uniform1f(light_constant_loc, light.constant);
+        gl::Uniform1f(light_linear_loc, light.linear);
+        gl::Uniform1f(light_quadratic_loc, light.quadratic);
     }
 }
 
@@ -788,13 +819,13 @@ struct ShaderSource {
 }
 
 fn create_mesh_shader_source() -> ShaderSource {
-    let vert_source = include_str!("../shaders/lighting_map.vert.glsl");
-    let frag_source = include_str!("../shaders/lighting_map.frag.glsl");
+    let vert_source = include_str!("../shaders/multiple_lights.vert.glsl");
+    let frag_source = include_str!("../shaders/multiple_lights.frag.glsl");
     
     ShaderSource {
-        vert_name: "lighting_map.vert.glsl",
+        vert_name: "multiple_lights.vert.glsl",
         vert_source: vert_source,
-        frag_name: "lighting_map.frag.glsl",
+        frag_name: "multiple_lights.frag.glsl",
         frag_source: frag_source,
     }
 }
@@ -807,18 +838,6 @@ fn create_cube_light_shader_source() -> ShaderSource {
         vert_name: "lighting_cube.vert.glsl",
         vert_source: vert_source,
         frag_name: "lighting_cube.frag.glsl",
-        frag_source: frag_source,
-    }
-}
-
-fn create_flashlight_shader_source() -> ShaderSource {
-    let vert_source = include_str!("../shaders/light_casters.vert.glsl");
-    let frag_source = include_str!("../shaders/light_casters.frag.glsl");
-    
-    ShaderSource {
-        vert_name: "light_casters.vert.glsl",
-        vert_source: vert_source,
-        frag_name: "light_casters.frag.glsl",
         frag_source: frag_source,
     }
 }
@@ -973,7 +992,8 @@ fn main() {
     let scene_center_world = Vector3::<f32>::zero();
     let mut camera = create_camera(SCREEN_WIDTH, SCREEN_HEIGHT);
     let mut cube_lights= create_cube_lights(&scene_center_world);
-    let mut flashlight = create_flashlight(&camera);
+    let mut spotlight = create_spotlight(&camera);
+    let mut dir_light = create_directional_light();
     let material_diffuse_index = 0;
     let material_specular_index = 1;
     let material = material::sgi_material_table()["chrome"];
@@ -1003,18 +1023,6 @@ fn main() {
     send_to_gpu_uniforms_camera(mesh_shader, &camera);
     send_to_gpu_uniforms_material(mesh_shader, material_uniforms);
 
-    // Load the model data for the flashlight shader.
-    let flashlight_shader_source = create_flashlight_shader_source();
-    let flashlight_shader = send_to_gpu_shaders(&mut context, flashlight_shader_source);
-    let (
-        flashlight_mesh_vao, 
-        flashlight_mesh_v_pos_vbo,
-        flashlight_mesh_v_tex_vbo,
-        flashlight_mesh_v_norm_vbo) = send_to_gpu_mesh(flashlight_shader, &mesh);
-    send_to_gpu_uniforms_flashlight_mesh(flashlight_shader, &mesh_model_mat);
-    send_to_gpu_uniforms_camera(flashlight_shader, &camera);
-    send_to_gpu_uniforms_material(flashlight_shader, material_uniforms);
-
 
     // Load the lighting cube model.
     let light_shader_source = create_cube_light_shader_source();
@@ -1041,51 +1049,30 @@ fn main() {
             framebuffer_size_callback(&mut context, width as u32, height as u32);
         }
 
-        cube_lights[0].update(elapsed_seconds as f32);
-        cube_lights[1].update(elapsed_seconds as f32);
-        cube_lights[2].update(elapsed_seconds as f32);
         let delta_movement = process_input(&mut context);
         camera.update_movement(delta_movement, elapsed_seconds as f32);
-        flashlight.update(&camera, elapsed_seconds as f32);
 
         send_to_gpu_uniforms_camera(mesh_shader, &camera);
-        send_to_gpu_uniforms_camera(flashlight_shader, &camera);
         send_to_gpu_uniforms_camera(light_shader, &camera);
-        send_to_gpu_uniforms_cube_light(mesh_shader, &cube_lights);
-        send_to_gpu_uniforms_flashlight(flashlight_shader, &flashlight);
-
-        
+        send_to_gpu_uniforms_point_light(mesh_shader, &cube_lights);
+    
         unsafe {
             gl::ClearBufferfv(gl::COLOR, 0, &CLEAR_COLOR[0] as *const GLfloat);
             gl::ClearBufferfv(gl::DEPTH, 0, &CLEAR_DEPTH[0] as *const GLfloat);
             gl::Viewport(0, 0, context.width as GLint, context.height as GLint);
-            // Illuminate the boxes with the cube lights.
-            /*
             gl::UseProgram(mesh_shader);
             gl::ActiveTexture(gl::TEXTURE0);
             gl::BindTexture(gl::TEXTURE_2D, diffuse_tex);
             gl::ActiveTexture(gl::TEXTURE1);
             gl::BindTexture(gl::TEXTURE_2D, specular_tex);
             gl::BindVertexArray(mesh_vao);
-            gl::DrawArrays(gl::TRIANGLES, 0, mesh.len() as i32);
-            */
-            
-            // Illuminate the boxes with the flashlight.
-            gl::UseProgram(flashlight_shader);
-            gl::ActiveTexture(gl::TEXTURE0);
-            gl::BindTexture(gl::TEXTURE_2D, diffuse_tex);
-            gl::ActiveTexture(gl::TEXTURE1);
-            gl::BindTexture(gl::TEXTURE_2D, specular_tex);
-            gl::BindVertexArray(flashlight_mesh_vao);
-            gl::DrawArrays(gl::TRIANGLES, 0, mesh.len() as i32);
-            
+            gl::DrawArrays(gl::TRIANGLES, 0, mesh.len() as i32);   
         }
 
         // Illuminate the boxes.
         for model_matrix in box_model_matrices.iter() {
             unsafe {
-                send_to_gpu_uniforms_flashlight_mesh(flashlight_shader, &model_matrix);
-                //send_to_gpu_uniforms_cube_light_mesh(mesh_shader, &model_matrix);
+                send_to_gpu_uniforms_cube_light_mesh(mesh_shader, &model_matrix);
                 gl::DrawArrays(gl::TRIANGLES, 0, mesh.len() as i32);
             }
         }
