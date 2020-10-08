@@ -113,5 +113,10 @@ impl<S> SpotLight<S> where S: ScalarFloat {
             specular: specular
         }
     }
+
+    pub fn update(&mut self, position: &Vector3<S>, direction: &Vector3<S>) {
+        self.position = position.clone();
+        self.direction = direction.clone();
+    }
 }
 

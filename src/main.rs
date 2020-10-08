@@ -80,7 +80,7 @@ const GL_TEXTURE_MAX_ANISOTROPY_EXT: u32 = 0x84FE;
 const GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT: u32 = 0x84FF;
 
 // Default value for the color buffer.
-const CLEAR_COLOR: [f32; 4] = [0.2_f32, 0.2_f32, 0.2_f32, 1.0_f32];
+const CLEAR_COLOR: [f32; 4] = [0.1_f32, 0.1_f32, 0.1_f32, 1.0_f32];
 // Default value for the depth buffer.
 const CLEAR_DEPTH: [f32; 4] = [1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32];
 
@@ -390,7 +390,7 @@ fn send_to_gpu_uniforms_dir_light(shader: GLuint, light: &DirLight<f32>) {
 /// the shader, OpenGL will optimize those uniform locations out at runtime. This
 /// will cause OpenGL to return a `GL_INVALID_VALUE` on a call to 
 /// `glGetUniformLocation`.
-fn send_to_gpu_uniforms_point_light(shader: GLuint, lights: &[PointLight<f32>; 4]) {
+fn send_to_gpu_uniforms_point_lights(shader: GLuint, lights: &[PointLight<f32>; 4]) {
     let light_position_loc = unsafe {
         gl::GetUniformLocation(shader, backend::gl_str("pointLights[0].position").as_ptr())
     };
@@ -975,7 +975,7 @@ fn main() {
     info!("BEGIN LOG");
     let mut camera = create_camera(SCREEN_WIDTH, SCREEN_HEIGHT);
     let cube_lights= create_cube_lights();
-    let spotlight = create_spotlight(&camera);
+    let mut spotlight = create_spotlight(&camera);
     let dir_light = create_directional_light();
     let material_diffuse_index = 0;
     let material_specular_index = 1;
@@ -1005,7 +1005,7 @@ fn main() {
     send_to_gpu_uniforms_cube_light_mesh(mesh_shader, &mesh_model_mat);
     send_to_gpu_uniforms_camera(mesh_shader, &camera);
     send_to_gpu_uniforms_material(mesh_shader, material_uniforms);
-    send_to_gpu_uniforms_point_light(mesh_shader, &cube_lights);
+    send_to_gpu_uniforms_point_lights(mesh_shader, &cube_lights);
     send_to_gpu_uniforms_spotlight(mesh_shader, &spotlight);
     send_to_gpu_uniforms_dir_light(mesh_shader, &dir_light);
 
@@ -1037,10 +1037,11 @@ fn main() {
 
         let delta_movement = process_input(&mut context);
         camera.update_movement(delta_movement, elapsed_seconds as f32);
+        spotlight.update(&camera.position(), &camera.forward_axis());
 
         send_to_gpu_uniforms_camera(mesh_shader, &camera);
         send_to_gpu_uniforms_camera(light_shader, &camera);
-        send_to_gpu_uniforms_point_light(mesh_shader, &cube_lights);
+        send_to_gpu_uniforms_point_lights(mesh_shader, &cube_lights);
         send_to_gpu_uniforms_spotlight(mesh_shader, &spotlight);
         send_to_gpu_uniforms_dir_light(mesh_shader, &dir_light);
     
