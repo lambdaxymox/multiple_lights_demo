@@ -1,14 +1,7 @@
 use cglinalg::{
-    Quaternion,
-    Magnitude,
     Matrix4,
-    Radians,
     Vector3,
-    Unit,
     ScalarFloat,
-};
-use crate::camera::{
-    PerspectiveFovCamera,
 };
 
 
