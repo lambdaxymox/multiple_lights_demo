@@ -139,8 +139,11 @@ void main()
     // per lamp. In the main() function we take all the calculated colors and sum them up for
     // this fragment's final color.
     // == =====================================================
-    // phase 1: directional lighting
-    vec3 result = IlluminateDirLight(dirLight, norm, viewDir);
+    // Phase 0: Emission lighting.
+    vec3 result = vec3(texture(material.emission, TexCoords));
+
+    // Phase 1: Directional lighting.
+    result += IlluminateDirLight(dirLight, norm, viewDir);
     
     // phase 2: point lights
     for(int i = 0; i < NUM_POINT_LIGHTS; i++) {

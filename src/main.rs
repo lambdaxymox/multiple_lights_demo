@@ -618,17 +618,19 @@ fn send_to_gpu_uniforms_spotlight(shader: GLuint, light: &SpotLight<f32>) {
     }
 }
 
-fn send_to_gpu_textures_material(lighting_map: &LightingMap) -> (GLuint, GLuint) {
+fn send_to_gpu_textures_material(lighting_map: &LightingMap) -> (GLuint, GLuint, GLuint) {
     let diffuse_tex = send_to_gpu_texture(&lighting_map.diffuse, gl::REPEAT).unwrap();
     let specular_tex = send_to_gpu_texture(&lighting_map.specular, gl::REPEAT).unwrap();
+    let emission_tex = send_to_gpu_texture(&lighting_map.emission, gl::REPEAT).unwrap();
 
-    (diffuse_tex, specular_tex)
+    (diffuse_tex, specular_tex, emission_tex)
 }
 
 #[derive(Copy, Clone)]
 struct MaterialUniforms<'a> {
     diffuse_index: i32,
     specular_index: i32,
+    emission_index: i32,
     material: &'a Material<f32>,
 }
 
@@ -641,6 +643,10 @@ fn send_to_gpu_uniforms_material(shader: GLuint, uniforms: MaterialUniforms) {
         gl::GetUniformLocation(shader, backend::gl_str("material.specular").as_ptr())
     };
     debug_assert!(material_specular_loc > -1);
+    let material_emission_loc = unsafe {
+        gl::GetUniformLocation(shader, backend::gl_str("material.emission").as_ptr())
+    };
+    debug_assert!(material_emission_loc > -1);
     let material_specular_exponent_loc = unsafe { 
         gl::GetUniformLocation(shader, backend::gl_str("material.specular_exponent").as_ptr())
     };
@@ -650,6 +656,7 @@ fn send_to_gpu_uniforms_material(shader: GLuint, uniforms: MaterialUniforms) {
         gl::UseProgram(shader);
         gl::Uniform1i(material_diffuse_loc, uniforms.diffuse_index);
         gl::Uniform1i(material_specular_loc, uniforms.specular_index);
+        gl::Uniform1i(material_emission_loc, uniforms.emission_index);
         gl::Uniform1f(material_specular_exponent_loc, uniforms.material.specular_exponent);
     }
 }
@@ -980,10 +987,12 @@ fn main() {
     let dir_light = create_directional_light();
     let material_diffuse_index = 0;
     let material_specular_index = 1;
+    let material_emission_index = 2;
     let material = material::sgi_material_table()["chrome"];
     let material_uniforms = MaterialUniforms { 
         diffuse_index: material_diffuse_index, 
         specular_index: material_specular_index,
+        emission_index: material_emission_index,
         material: &material,
     };
     let lighting_map = create_lighting_map();
@@ -993,7 +1002,10 @@ fn main() {
     let mesh_model_mat = Matrix4::identity();
 
     // Load the lighting maps data for the flashlight and cubelight shaders.
-    let (diffuse_tex, specular_tex) = send_to_gpu_textures_material(&lighting_map);
+    let (
+        diffuse_tex, 
+        specular_tex, 
+        emission_tex) = send_to_gpu_textures_material(&lighting_map);
 
     //  Load the model data for the cube light shader..
     let mesh_shader_source = create_mesh_shader_source();
@@ -1055,6 +1067,8 @@ fn main() {
             gl::BindTexture(gl::TEXTURE_2D, diffuse_tex);
             gl::ActiveTexture(gl::TEXTURE1);
             gl::BindTexture(gl::TEXTURE_2D, specular_tex);
+            gl::ActiveTexture(gl::TEXTURE2);
+            gl::BindTexture(gl::TEXTURE_2D, emission_tex);
             gl::BindVertexArray(mesh_vao);
             gl::DrawArrays(gl::TRIANGLES, 0, mesh.len() as i32);
         }
