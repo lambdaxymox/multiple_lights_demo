@@ -639,7 +639,7 @@ pub fn compile_from_reader<R1: Read, P1: AsRef<Path>, R2: Read, P2: AsRef<Path>>
     Ok(program)
 }
 
-pub fn compile(shader_source: &ShaderSource) -> Result<GLuint, ShaderCompilationError> {
+pub fn compile(shader_source: &ShaderSource) -> Result<ShaderHandle, ShaderCompilationError> {
     let mut vert_reader = Cursor::new(shader_source.vertex_source);
     let mut frag_reader = Cursor::new(shader_source.fragment_source);
     let result = compile_from_reader(
@@ -654,7 +654,7 @@ pub fn compile(shader_source: &ShaderSource) -> Result<GLuint, ShaderCompilation
     };
     debug_assert!(shader > 0);
 
-    Ok(shader)
+    Ok(ShaderHandle::new(shader))
 }
 
 use cglinalg::{
@@ -722,7 +722,7 @@ impl<'a, 'b, 'c> ShaderSourceBuilder<'a, 'b, 'c> {
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 pub struct ShaderHandle {
-    id: u32,
+    pub id: u32,
 }
 
 impl ShaderHandle {
@@ -738,6 +738,16 @@ impl ShaderHandle {
         unsafe {
             gl::UseProgram(self.id);
         }
+    }
+
+    #[inline]
+    pub fn get_attrib_location(&self, name: &str) -> u32 {
+        let location = unsafe {
+            gl::GetAttribLocation(self.id, gl_str(name).as_ptr())
+        };
+        debug_assert!(location > -1);
+
+        location as u32
     }
 
     #[inline]
