@@ -681,7 +681,6 @@ use cglinalg::{
     Matrix2,
     Matrix3,
     Matrix4,
-    Array,
 };
 
 #[derive(Copy, Clone, Debug)]
