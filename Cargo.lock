@@ -83,8 +83,8 @@ dependencies = [
 
 [[package]]
 name = "cgwavefront_obj"
-version = "1.0.0"
-source = "git+https://github.com/lambdaxymox/cgwavefront_obj#140071cd38c591f77e77a983af254fb8ca29f2fd"
+version = "1.0.3"
+source = "git+https://github.com/lambdaxymox/cgwavefront_obj#64e492f384e4ba0dc522af1c9afd0354b20c3a3c"
 
 [[package]]
 name = "chrono"
@@ -116,9 +116,9 @@ checksum = "3d7b894f5411737b7867f4827955924d7c254fc9f4d91a6aad6b097804b1018b"
 
 [[package]]
 name = "const_fn"
-version = "0.4.3"
+version = "0.4.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c478836e029dcef17fb47c89023448c64f781a046e0300e257ad8225ae59afab"
+checksum = "cd51eab21ab4fd6a3bf889e2d0958c0a6e3a61ad04260325e919e652a2a62826"
 
 [[package]]
 name = "crc32fast"
@@ -223,13 +223,12 @@ dependencies = [
 
 [[package]]
 name = "glfw"
-version = "0.39.1"
+version = "0.41.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d26b0c94d75430f0e8f0359c3f669c89b79df6c291f999596fb07e536b41c050"
+checksum = "dbb254ad1715644ab078c94372405bf061358b97969635ef7b09cf6f9437843e"
 dependencies = [
  "bitflags",
  "glfw-sys",
- "libc",
  "log",
  "objc",
  "raw-window-handle",
@@ -337,8 +336,8 @@ dependencies = [
 
 [[package]]
 name = "mini_obj"
-version = "0.1.10"
-source = "git+https://github.com/lambdaxymox/mini_obj#f1f377faa5aad58fc18e5ef2a34c509988fc46a1"
+version = "0.1.11"
+source = "git+https://github.com/lambdaxymox/mini_obj#a099501e39234c4dde325c632d4a0c1cd13f0a3c"
 dependencies = [
  "obj",
  "obj_gen",
@@ -431,16 +430,16 @@ dependencies = [
 
 [[package]]
 name = "obj"
-version = "0.1.10"
-source = "git+https://github.com/lambdaxymox/mini_obj#f1f377faa5aad58fc18e5ef2a34c509988fc46a1"
+version = "0.1.11"
+source = "git+https://github.com/lambdaxymox/mini_obj#a099501e39234c4dde325c632d4a0c1cd13f0a3c"
 dependencies = [
  "cgwavefront_obj",
 ]
 
 [[package]]
 name = "obj_gen"
-version = "0.1.10"
-source = "git+https://github.com/lambdaxymox/mini_obj#f1f377faa5aad58fc18e5ef2a34c509988fc46a1"
+version = "0.1.11"
+source = "git+https://github.com/lambdaxymox/mini_obj#a099501e39234c4dde325c632d4a0c1cd13f0a3c"
 dependencies = [
  "obj",
 ]
@@ -456,9 +455,9 @@ dependencies = [
 
 [[package]]
 name = "png"
-version = "0.16.7"
+version = "0.16.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "dfe7f9f1c730833200b134370e1d5098964231af8450bce9b78ee3ab5278b970"
+checksum = "3c3287920cb847dee3de33d301c463fba14dda99db24214ddf93f83d3021f4c6"
 dependencies = [
  "bitflags",
  "crc32fast",
@@ -529,9 +528,9 @@ checksum = "388a1df253eca08550bef6c72392cfe7c30914bf41df5269b68cbd6ff8f570a3"
 
 [[package]]
 name = "tiff"
-version = "0.6.0"
+version = "0.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "abeb4e3f32a8973722c0254189e6890358e72b1bf11becb287ee0b23c595a41d"
+checksum = "9a53f4706d65497df0c4349241deddf35f84cee19c87ed86ea8ca590f4464437"
 dependencies = [
  "jpeg-decoder",
  "miniz_oxide 0.4.3",
